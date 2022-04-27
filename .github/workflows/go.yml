@@ -1,13 +1,10 @@
 name: Go
 
-
 on:
   push:
-    paths:
-      - ".github/workflows/**"
-
-env:
-  TOOLCHAIN_TAG: Build ChinaTelecomMonitor v0.0.1
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
 

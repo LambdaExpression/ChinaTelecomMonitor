@@ -9,12 +9,12 @@
 1.准备一个可正常登录[电信](https://e.189.cn/wap/index.do)账号密码
 1.安装docker
 2.执行 `docker pull lambdaexpression/headless-shell-utf-8:95.0.4638.32`，下载 [lambdaexpression/headless-shell-utf-8](https://hub.docker.com/r/lambdaexpression/headless-shell-utf-8) 容器到本地
-3.下载本应用 `wget `
+3.下载本应用 `wget https://github.com/LambdaExpression/ChinaTelecomMonitor/releases/download/v1.0.0/China_Telecom_Monitor_amd64`
 
 ### 2.启动应用
 
 ```
-$ ./China_Telecom_Monitor --prot 8081 --dockerProt 9222 --username '电信账号' --password '电信密码'
+$ ./China_Telecom_Monitor_amd64 --prot 8081 --dockerProt 9222 --username '电信账号' --password '电信密码'
 ```
 
 ### 3.测试访问
@@ -29,8 +29,8 @@ curl http://127.0.0.1:8081/show/flow
 **应用支持参数**
 除了账号、密码是必填的，其他参数都可以保持默认，应用会为其设置默认值
 ```shell
-$ ./China_Telecom_Monitor -h
-Usage of ./China_Telecom_Monitor:
+$ ./China_Telecom_Monitor_amd64 -h
+Usage of ./China_Telecom_Monitor_amd64:
   -dataPath string
         --dataPath ./data # 数据日志文件保存路径 (default "./data")
   -dev

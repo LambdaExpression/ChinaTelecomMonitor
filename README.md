@@ -7,7 +7,7 @@
 ### 1.准备
 
 - 1.准备一个可正常登录[电信](https://e.189.cn/wap/index.do)账号密码
-- 2.安装 docker (可以自行查询谷哥或度娘)
+- 2.安装 docker (可自行查询谷哥或度娘)
 - 3.执行 `docker pull lambdaexpression/headless-shell-utf-8:95.0.4638.32`，下载 [lambdaexpression/headless-shell-utf-8](https://hub.docker.com/r/lambdaexpression/headless-shell-utf-8) 容器到本地
 - 4.下载本应用 `wget https://github.com/LambdaExpression/ChinaTelecomMonitor/releases/download/v1.0.0/China_Telecom_Monitor_amd64`
 

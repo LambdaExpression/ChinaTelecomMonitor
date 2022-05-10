@@ -5,7 +5,7 @@
 可配合 Scriptables 插件 [ChinaTelecomPanel](https://lambdaexpression.github.io/ScriptablesComponent/ChinaTelecomPanel/) 一起使用
 
 ### 版本更新
-**[v1.0.1](https://github.com/LambdaExpression/ChinaTelecomMonitor/releases/tag/v1.0.1)**
+**v1.0.1**
 
 update：
  - 修复新版本电信登录页面默认勾选隐私协议，导致登录失败问题 [#1](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/1)

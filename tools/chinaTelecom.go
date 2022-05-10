@@ -115,7 +115,7 @@ func login(ctx context.Context, username, password string) {
 		chromedp.WaitVisible(`j-login-btn`, chromedp.ByID),
 		chromedp.SendKeys(`j-userName`, username, chromedp.ByID),
 		chromedp.SendKeys(`j-password`, password, chromedp.ByID),
-		chromedp.Click(`j-agreement-checkbox`, chromedp.ByID),
+		//chromedp.Click(`j-agreement-checkbox`, chromedp.ByID),
 		chromedp.Click(`j-login-btn`, chromedp.ByID),
 		chromedp.CaptureScreenshot(&b2),
 		chromedp.WaitVisible(`_userMobile`, chromedp.ByID),

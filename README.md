@@ -4,6 +4,10 @@
 本工具是部署在服务器(或x86软路由等设备) 使用 docker [lambdaexpression/headless-shell-utf-8](https://hub.docker.com/r/lambdaexpression/headless-shell-utf-8) 进行模拟浏览器登录获取cookie，按需定时获取电信手机话费、流量、语音通话使用情况，通过接口返回数据。
 可配合 Scriptables 插件 [ChinaTelecomPanel](https://lambdaexpression.github.io/ScriptablesComponent/ChinaTelecomPanel/) 一起使用
 
+**重要说明 2022-05-18**
+电信登录又更新，现在又不会默认勾选登录服务协议（玩我是吧，反复改这个勾选按钮。吐血~），请先回滚到v1.0.0使用
+近来工作较忙，后面我再看一下能不能自动判断勾选服务协议
+
 ### 版本更新
 **v1.0.1**
 

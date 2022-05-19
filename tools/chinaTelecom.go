@@ -102,6 +102,7 @@ func login(ctx context.Context, username, password string) {
 	indexUrl := "https://e.189.cn/wap/index.do"
 	var collectLink string
 	var res string
+	var jAgreementCheckboxHtml string
 
 	var b1, b2, b3 []byte
 	var ck []*network.Cookie
@@ -113,9 +114,28 @@ func login(ctx context.Context, username, password string) {
 		chromedp.CaptureScreenshot(&b1),
 		chromedp.Click(`j-other-login-way2`, chromedp.ByID),
 		chromedp.WaitVisible(`j-login-btn`, chromedp.ByID),
+		chromedp.OuterHTML("j-agreement-checkbox", &jAgreementCheckboxHtml, chromedp.ByID),
+	)
+	if err != nil {
+		configs.Logger.Error("error", err)
+		outLogonPng(b1, b2, b3)
+		return
+	}
+
+	if !strings.Contains(jAgreementCheckboxHtml, "ag-ckbox") {
+		err = chromedp.Run(ctx,
+			chromedp.Click(`j-agreement-checkbox`, chromedp.ByID),
+		)
+		if err != nil {
+			configs.Logger.Error("error", err)
+			outLogonPng(b1, b2, b3)
+			return
+		}
+	}
+
+	err = chromedp.Run(ctx,
 		chromedp.SendKeys(`j-userName`, username, chromedp.ByID),
 		chromedp.SendKeys(`j-password`, password, chromedp.ByID),
-		//chromedp.Click(`j-agreement-checkbox`, chromedp.ByID),
 		chromedp.Click(`j-login-btn`, chromedp.ByID),
 		chromedp.CaptureScreenshot(&b2),
 		chromedp.WaitVisible(`_userMobile`, chromedp.ByID),

@@ -4,13 +4,13 @@
 本工具是部署在服务器(或x86软路由等设备) 使用 docker [lambdaexpression/headless-shell-utf-8](https://hub.docker.com/r/lambdaexpression/headless-shell-utf-8) 进行模拟浏览器登录获取cookie，按需定时获取电信手机话费、流量、语音通话使用情况，通过接口返回数据。
 可配合 Scriptables 插件 [ChinaTelecomPanel](https://lambdaexpression.github.io/ScriptablesComponent/ChinaTelecomPanel/) 一起使用
 
-# **重要说明 2022-05-18**
-
-电信登录页面又更新了，现在又不会默认勾选登录服务协议（玩我是吧，反复改这个勾选按钮。吐血~），暂时请先回滚到版本 v1.0.0 使用
-
-近来工作较忙，后面我再看一下能不能自动判断勾选服务协议
 
 ### 版本更新
+
+**v1.0.2**
+
+ - 添加自动判断是否勾选用户隐私协议 [#3](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/3)
+
 **v1.0.1**
 
 update：
@@ -21,7 +21,7 @@ update：
 - 1.准备一个可正常登录[电信](https://e.189.cn/wap/index.do)账号密码
 - 2.安装 docker (可自行查询谷哥或度娘)
 - 3.执行 `docker pull lambdaexpression/headless-shell-utf-8:95.0.4638.32`，下载 [lambdaexpression/headless-shell-utf-8](https://hub.docker.com/r/lambdaexpression/headless-shell-utf-8) 容器到本地
-- 4.下载本应用 `wget https://github.com/LambdaExpression/ChinaTelecomMonitor/releases/download/v1.0.1/China_Telecom_Monitor_amd64`
+- 4.下载本应用 `wget https://github.com/LambdaExpression/ChinaTelecomMonitor/releases/download/v1.0.2/China_Telecom_Monitor_amd64`
 - 5.应用授权 `chmod +x ./China_Telecom_Monitor_amd64`
 
 ### 2.启动应用

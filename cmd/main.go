@@ -171,6 +171,7 @@ func initIris() {
 	irisApp := iris.New()
 	irisApp.Use(middleware)
 	irisApp.Handle(iris.MethodGet, "/show/flow", flow)
+	irisApp.Handle(iris.MethodGet, "/show/detail", packageDetail)
 	if configs.Dev {
 		irisApp.Handle(iris.MethodGet, "/refresh", refresh)
 		irisApp.Handle(iris.MethodGet, "/image/{filename:string}", image)
@@ -209,6 +210,18 @@ func flow(ctx iris.Context) {
 	}
 	summary := desensitization(configs.Summary)
 	ctx.JSON(iris.Map{"code": 200, "data": summary})
+}
+
+var packageDetailVisitLastTime carbon.Carbon
+var packageDetailDetailRequest models.DetailRequest
+
+func packageDetail(ctx iris.Context) {
+	if carbon.Now().Lt(packageDetailVisitLastTime.AddSeconds(configs.IntervalsTime)) {
+		ctx.JSON(packageDetailDetailRequest)
+		return
+	}
+	packageDetailDetailRequest := tools.GetFlowDetail(false)
+	ctx.JSON(packageDetailDetailRequest)
 }
 
 func desensitization(summary models.Summary) models.Summary {

@@ -9,6 +9,7 @@
 
 **v1.0.2**
 
+add:
  - 添加自动判断是否勾选用户隐私协议 [#3](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/3)
 
 **v1.0.1**

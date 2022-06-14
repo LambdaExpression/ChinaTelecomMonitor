@@ -22,6 +22,8 @@ var LogEncoding string
 
 var Dev bool
 
+var PrintVersion bool
+
 var Browser *browser.Browser
 var Summary models.Summary
 

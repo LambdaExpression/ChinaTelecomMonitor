@@ -17,9 +17,19 @@ import (
 	"time"
 )
 
+var Version = "v1.0.4"
+var GoVersion = "not set"
+var GitCommit = "not set"
+var BuildTime = "not set"
+
 func main() {
 
 	initFlag()
+	if configs.PrintVersion {
+		version()
+		return
+	}
+
 	initLogger()
 
 	if checkFlag() {
@@ -52,9 +62,16 @@ func initFlag() {
 	flag.StringVar(&configs.DataPath, "dataPath", "./data", "--dataPath ./data # 数据日志文件保存路径")
 
 	flag.BoolVar(&configs.Dev, "dev", false, "--dev false # 开发模式,开启后将支持以下接口： /refresh 手动更新流量，/loginLog 查看登录截图日志")
+	flag.BoolVar(&configs.PrintVersion, "version", false, "打印程序构建版本")
 
 	flag.Parse()
+}
 
+func version() {
+	fmt.Printf("Version: %s\n", Version)
+	fmt.Printf("Go Version: %s\n", GoVersion)
+	fmt.Printf("Git Commit: %s\n", GitCommit)
+	fmt.Printf("Build Time: %s\n", BuildTime)
 }
 
 func checkFlag() bool {

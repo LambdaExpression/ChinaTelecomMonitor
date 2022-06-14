@@ -102,6 +102,7 @@ func login(ctx context.Context, username, password string) {
 	indexUrl := "https://e.189.cn/wap/index.do"
 	var collectLink string
 	var res string
+	var bodyHtml string
 	var jAgreementCheckboxHtml string
 
 	var b1, b2, b3 []byte
@@ -110,12 +111,24 @@ func login(ctx context.Context, username, password string) {
 	err := chromedp.Run(ctx,
 		chromedp.Emulate(device.IPhone8Plus),
 		chromedp.Navigate(indexUrl),
-		chromedp.WaitVisible(`j-sms-userName`, chromedp.ByID),
-		chromedp.CaptureScreenshot(&b1),
-		chromedp.Click(`j-other-login-way2`, chromedp.ByID),
-		chromedp.WaitVisible(`j-login-btn`, chromedp.ByID),
-		chromedp.OuterHTML("j-agreement-checkbox", &jAgreementCheckboxHtml, chromedp.ByID),
 	)
+
+	time.Sleep(8 * time.Second)
+
+	err = chromedp.Run(ctx,
+		chromedp.CaptureScreenshot(&b1),
+		chromedp.OuterHTML("body", &bodyHtml, chromedp.ByQuery),
+	)
+
+	if !strings.Contains(bodyHtml, "id=\"j-account-login\" class=\"bg-login-wrap block\"") {
+		err = chromedp.Run(ctx,
+			chromedp.WaitVisible(`j-sms-userName`, chromedp.ByID),
+			chromedp.Click(`j-other-login-way2`, chromedp.ByID),
+			chromedp.WaitVisible(`j-login-btn`, chromedp.ByID),
+			chromedp.OuterHTML("j-agreement-checkbox", &jAgreementCheckboxHtml, chromedp.ByID),
+		)
+	}
+
 	if err != nil {
 		configs.Logger.Error("error", err)
 		outLogonPng(b1, b2, b3)

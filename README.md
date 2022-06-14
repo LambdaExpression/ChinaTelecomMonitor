@@ -7,6 +7,20 @@
 
 ### 版本更新
 
+**v1.0.4**
+
+add:
+ - 添加 -version 版本打印
+
+update:
+
+ - 优化 自适应电信登录页面登录 [#5](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/5)
+
+**v1.0.3**
+
+add:
+ - 添加 /show/detail 接口 [#4](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/4)
+
 **v1.0.2**
 
 add:
@@ -22,7 +36,7 @@ update：
 - 1.准备一个可正常登录[电信](https://e.189.cn/wap/index.do)账号密码
 - 2.安装 docker (可自行查询谷哥或度娘)
 - 3.执行 `docker pull lambdaexpression/headless-shell-utf-8:95.0.4638.32`，下载 [lambdaexpression/headless-shell-utf-8](https://hub.docker.com/r/lambdaexpression/headless-shell-utf-8) 容器到本地
-- 4.下载本应用 `wget https://github.com/LambdaExpression/ChinaTelecomMonitor/releases/download/v1.0.2/China_Telecom_Monitor_amd64`
+- 4.下载本应用 `wget https://github.com/LambdaExpression/ChinaTelecomMonitor/releases/download/v1.0.4/China_Telecom_Monitor_amd64`
 - 5.应用授权 `chmod +x ./China_Telecom_Monitor_amd64`
 
 ### 2.启动应用
@@ -69,31 +83,41 @@ curl http://127.0.0.1:8081/show/flow
 $ ./China_Telecom_Monitor_amd64 -h
 Usage of ./China_Telecom_Monitor_amd64:
   -dataPath string
-        --dataPath ./data # 数据日志文件保存路径 (default "./data")
+    	--dataPath ./data # 数据日志文件保存路径 (default "./data")
   -dev
-        --dev false # 开发模式,开启后将支持以下接口： /refresh 手动更新流量，/loginLog 查看登录截图日志
+    	--dev false # 开发模式,开启后将支持以下接口： /refresh 手动更新流量，/loginLog 查看登录截图日志
   -dockerProt string
-        --dockerProt 9222 (default "9222")
+    	--dockerProt 9222 #登录容器使用的端口 (default "9222")
   -dockerWaitTime int
-        --dockerWaitTime 60 #登录容器等待启动时间 (default 60)
+    	--dockerWaitTime 60 #登录容器等待启动时间 (default 60)
   -intervalsTime int
-        --intervalsTime 180 #接口防止重刷时间 (default 180)
+    	--intervalsTime 180 #接口防止重刷时间 (default 180)
   -logEncoding string
-        --logEncoding console # 日志输出格式 console 或 json (default "console")
+    	--logEncoding console # 日志输出格式 console 或 json (default "console")
   -logLevel string
-        --logLevel info # 日志等级 (default "info")
+    	--logLevel info # 日志等级 (default "info")
   -loginIntervalTime int
-        --loginIntervalTime 43200 #电信登录间隔时间（防止被封号），秒 (default 43200)
+    	--loginIntervalTime 43200 #电信登录间隔时间（防止被封号），秒 (default 43200)
   -password string
-        --password xxxxx #电信账号密码, 必填
+    	--password xxxxx #电信账号密码, 必填
   -prot string
-        --prot 8080 (default "8080")
+    	--prot 8080 (default "8080")
   -timeOut int
-        --timeOut 30 #访问电信接口请求超时时间，秒 (default 30)
+    	--timeOut 30 #访问电信接口请求超时时间，秒 (default 30)
   -username string
-        --username 1xxxxxxxxxx #电信账号用户名, 必填
+    	--username 1xxxxxxxxxx #电信账号用户名, 必填
+  -version
+    	打印程序构建版本
 
 ```
+
+**部分接口说明**
+
+```
+curl http://127.0.0.1:8081/show/detail
+```
+
+这个接口主要提供给有二次开发需求的使用。接口的数据是从电信的 https://e.189.cn/store/user/package_detail.do 接口获取而来，没有进行数据二次处理，完全是原始数据输出。[#4](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/4)
 
 
 

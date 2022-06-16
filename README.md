@@ -7,7 +7,7 @@
 
 ### 版本更新
 
-*(注：应用如果在正常期间突然无法使用，大概率是电信登录页面的页面元素发生改变，导致登录逻辑无法正常执行。在保证自身使用的是最新版本后，任然无法解决可通过 [Issuess](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues) 进行反馈)*
+*(注：应用如果在正常期间突然无法使用，大概率是电信登录页面的页面元素发生改变，导致登录逻辑无法正常执行。在保证自身使用的是最新版本后，任然无法解决可通过 [Issuess](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues) 进行反馈。电信的这种行为，个人怀疑这是电信的防爬虫策略，现阶段应用也只能发现一种就通过版本迭代兼容一种)*
 
 **v1.0.4**
 

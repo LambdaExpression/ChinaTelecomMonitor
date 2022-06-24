@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-var Version = "v1.0.4"
+var Version = "v1.0.5"
 var GoVersion = "not set"
 var GitCommit = "not set"
 var BuildTime = "not set"
@@ -180,7 +180,8 @@ func cronSummary() {
 	t := carbon.Now()
 	detailRequest := tools.GetFlowDetail(true)
 	balance := tools.GetBalance(true)
-	configs.Summary = tools.ToSummary(detailRequest, balance, configs.Username, t)
+	flowPackage := tools.GetFlowPackage(true)
+	configs.Summary = tools.ToSummary2(detailRequest, flowPackage, balance, configs.Username, t)
 }
 
 // 初始化访问接口
@@ -224,7 +225,8 @@ func flow(ctx iris.Context) {
 		go cronSummary()
 	} else {
 		balance := tools.GetBalance(true)
-		configs.Summary = tools.ToSummary(detailRequest, balance, configs.Username, t)
+		flowPackage := tools.GetFlowPackage(true)
+		configs.Summary = tools.ToSummary2(detailRequest, flowPackage, balance, configs.Username, t)
 	}
 	summary := desensitization(configs.Summary)
 	ctx.JSON(iris.Map{"code": 200, "data": summary})

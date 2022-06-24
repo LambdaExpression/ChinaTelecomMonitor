@@ -57,8 +57,8 @@ type FlowPackage struct {
 	Result             int    `json:"result"`
 	Msg                string `json:"msg"`
 	UserPackageBalance struct {
-		Balance       int    `json:"balance"`
-		BalanceCommon int    `json:"balanceCommon"`
+		Balance       int64  `json:"balance"`
+		BalanceCommon int64  `json:"balanceCommon"`
 		IsUnlimit     string `json:"isUnlimit"`
 		Items         []struct {
 			BalanceAmount string      `json:"balanceAmount"`
@@ -85,16 +85,16 @@ type FlowPackage struct {
 			TotalPercent   string      `json:"totalPercent"`
 		} `json:"items"`
 		ParaFieldResult       string      `json:"paraFieldResult"`
-		ServiceResultCode     int         `json:"serviceResultCode"`
-		Total                 int         `json:"total"`
+		ServiceResultCode     int64       `json:"serviceResultCode"`
+		Total                 int64       `json:"total"`
 		TotalBalanceAvailable interface{} `json:"totalBalanceAvailable"`
-		TotalCommon           int         `json:"totalCommon"`
-		UsageCommon           int         `json:"usageCommon"`
-		Used                  int         `json:"used"`
-		UsedCommon            int         `json:"usedCommon"`
-		VoiceAmount           interface{} `json:"voiceAmount"`
-		VoiceBalance          interface{} `json:"voiceBalance"`
-		VoiceUsage            interface{} `json:"voiceUsage"`
+		TotalCommon           int64       `json:"totalCommon"`
+		UsageCommon           int64       `json:"usageCommon"`
+		Used                  int64       `json:"used"`
+		UsedCommon            int64       `json:"usedCommon"`
+		VoiceAmount           int64       `json:"voiceAmount"`
+		VoiceBalance          int64       `json:"voiceBalance"`
+		VoiceUsage            int64       `json:"voiceUsage"`
 		Xvalue                int         `json:"xvalue"`
 	} `json:"userPackageBalance"`
 }

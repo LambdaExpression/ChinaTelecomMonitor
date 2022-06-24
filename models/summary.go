@@ -17,4 +17,11 @@ type Summary struct {
 	VoiceUsage   int64           `gorm:"type:int" json:"voiceUsage"`         // 语音使用量
 	VoiceAmount  int64           `gorm:"type:int" json:"voiceAmount"`        // 语音总量
 	CreateTime   carbon.DateTime `gorm:"type:TIMESTAMP" json:"createTime"`   // 查询时间
+	Items        []SummaryItems  `json:"items"`
+}
+
+type SummaryItems struct {
+	Name  string `gorm:"type:varchar(1024)" json:"name"`
+	Use   int64  `gorm:"type:int" json:"use"`
+	Total int64  `gorm:"type:int" json:"total"`
 }

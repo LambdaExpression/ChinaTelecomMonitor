@@ -189,6 +189,7 @@ func initIris() {
 	irisApp.Use(middleware)
 	irisApp.Handle(iris.MethodGet, "/show/flow", flow)
 	irisApp.Handle(iris.MethodGet, "/show/detail", packageDetail)
+	irisApp.Handle(iris.MethodGet, "/show/flowPackage", flowPackage)
 	if configs.Dev {
 		irisApp.Handle(iris.MethodGet, "/refresh", refresh)
 		irisApp.Handle(iris.MethodGet, "/image/{filename:string}", image)
@@ -205,17 +206,17 @@ func middleware(ctx iris.Context) {
 	ctx.Next()
 }
 
-var lastTime carbon.Carbon
+var flowLastTime carbon.Carbon
 
 // 获取流量信息接口
 func flow(ctx iris.Context) {
 
-	if carbon.Now().Lt(lastTime.AddSeconds(configs.IntervalsTime)) {
+	if carbon.Now().Lt(flowLastTime.AddSeconds(configs.IntervalsTime)) {
 		ctx.JSON(iris.Map{"code": 200, "data": desensitization(configs.Summary)})
 		return
 	}
 
-	lastTime = carbon.Now()
+	flowLastTime = carbon.Now()
 
 	t := carbon.Now()
 	detailRequest := tools.GetFlowDetail(false)
@@ -230,15 +231,29 @@ func flow(ctx iris.Context) {
 }
 
 var packageDetailVisitLastTime carbon.Carbon
-var packageDetailDetailRequest models.DetailRequest
+var packageDetailDetailRequest *models.DetailRequest
 
 func packageDetail(ctx iris.Context) {
 	if carbon.Now().Lt(packageDetailVisitLastTime.AddSeconds(configs.IntervalsTime)) {
-		ctx.JSON(packageDetailDetailRequest)
+		ctx.JSON(&packageDetailDetailRequest)
 		return
 	}
-	packageDetailDetailRequest := tools.GetFlowDetail(false)
-	ctx.JSON(packageDetailDetailRequest)
+	packageDetailDetailRequest = tools.GetFlowDetail(false)
+	packageDetailVisitLastTime = carbon.Now()
+	ctx.JSON(&packageDetailDetailRequest)
+}
+
+var flowPackageVisitLastTime carbon.Carbon
+var flowPackageDetailRequest *models.FlowPackage
+
+func flowPackage(ctx iris.Context) {
+	if carbon.Now().Lt(flowPackageVisitLastTime.AddSeconds(configs.IntervalsTime)) {
+		ctx.JSON(&flowPackageDetailRequest)
+		return
+	}
+	flowPackageDetailRequest = tools.GetFlowPackage(false)
+	flowPackageVisitLastTime = carbon.Now()
+	ctx.JSON(&flowPackageDetailRequest)
 }
 
 func desensitization(summary models.Summary) models.Summary {

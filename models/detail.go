@@ -52,3 +52,49 @@ type BalanceNew struct {
 	} `json:"items"`
 	ParaFieldResult string `json:"paraFieldResult"`
 }
+
+type FlowPackage struct {
+	Result             int    `json:"result"`
+	Msg                string `json:"msg"`
+	UserPackageBalance struct {
+		Balance       int    `json:"balance"`
+		BalanceCommon int    `json:"balanceCommon"`
+		IsUnlimit     string `json:"isUnlimit"`
+		Items         []struct {
+			BalanceAmount string      `json:"balanceAmount"`
+			BeginDate     interface{} `json:"beginDate"`
+			EndDate       interface{} `json:"endDate"`
+			Items         []struct {
+				BalanceAmount       string `json:"balanceAmount"`
+				BeginTime           string `json:"beginTime"`
+				EndTime             string `json:"endTime"`
+				ItemPercent         string `json:"itemPercent"`
+				NameType            string `json:"nameType"`
+				OwnerID             string `json:"ownerID"`
+				OwnerType           string `json:"ownerType"`
+				RatableAmount       string `json:"ratableAmount"`
+				RatableResourceID   string `json:"ratableResourceID"`
+				RatableResourcename string `json:"ratableResourcename"`
+				UnitTypeID          string `json:"unitTypeId"`
+				UsageAmount         string `json:"usageAmount"`
+			} `json:"items"`
+			OfferType      int         `json:"offerType"`
+			ProductOFFName string      `json:"productOFFName"`
+			ProductOfferID interface{} `json:"productOfferId"`
+			RatableAmount  string      `json:"ratableAmount"`
+			TotalPercent   string      `json:"totalPercent"`
+		} `json:"items"`
+		ParaFieldResult       string      `json:"paraFieldResult"`
+		ServiceResultCode     int         `json:"serviceResultCode"`
+		Total                 int         `json:"total"`
+		TotalBalanceAvailable interface{} `json:"totalBalanceAvailable"`
+		TotalCommon           int         `json:"totalCommon"`
+		UsageCommon           int         `json:"usageCommon"`
+		Used                  int         `json:"used"`
+		UsedCommon            int         `json:"usedCommon"`
+		VoiceAmount           interface{} `json:"voiceAmount"`
+		VoiceBalance          interface{} `json:"voiceBalance"`
+		VoiceUsage            interface{} `json:"voiceUsage"`
+		Xvalue                int         `json:"xvalue"`
+	} `json:"userPackageBalance"`
+}

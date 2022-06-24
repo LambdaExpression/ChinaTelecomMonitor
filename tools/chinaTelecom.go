@@ -339,6 +339,19 @@ func GetBalance(autoLogin bool) *models.BalanceNew {
 	return &balanceNew
 }
 
+func GetFlowPackage(autoLogin bool) *models.FlowPackage {
+	flow := "https://e.189.cn/store/wap/flowPackage.do"
+	body := request(flow, 0, autoLogin)
+	//configs.Logger.Info("GetBalance", body)
+
+	flowPackage := models.FlowPackage{}
+	if err := json.Unmarshal([]byte(body), &flowPackage); err != nil {
+		configs.Logger.Error(err)
+		return nil
+	}
+	return &flowPackage
+}
+
 func request(requestUrl string, count int, autoLogin bool) string {
 	setCookie()
 	err := configs.Browser.Open(requestUrl)

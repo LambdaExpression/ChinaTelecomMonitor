@@ -102,18 +102,19 @@ func ToSummary2(dr *models.DetailRequest, fp *models.FlowPackage, b *models.Bala
 
 	for i, fu := range fp.UserPackageBalance.Items {
 		if fu.ProductOFFName == "国内流量" {
-			u, err := ToInt64(fu.BalanceAmount)
-			if err != nil {
-				configs.Logger.Error(err)
-			} else {
-				generalUse += u
-			}
-
 			t, err := ToInt64(fu.RatableAmount)
 			if err != nil {
 				configs.Logger.Error(err)
 			} else {
 				generalTotal += t
+			}
+
+			u, err := ToInt64(fu.BalanceAmount)
+			if err != nil {
+				configs.Logger.Error(err)
+			} else {
+				u = t - u
+				generalUse += u
 			}
 
 			items[i] = models.SummaryItems{
@@ -123,18 +124,19 @@ func ToSummary2(dr *models.DetailRequest, fp *models.FlowPackage, b *models.Bala
 			}
 		} else {
 
-			u, err := ToInt64(fu.BalanceAmount)
-			if err != nil {
-				configs.Logger.Error(err)
-			} else {
-				specialUse += u
-			}
-
 			t, err := ToInt64(fu.RatableAmount)
 			if err != nil {
 				configs.Logger.Error(err)
 			} else {
 				specialTotal += t
+			}
+
+			u, err := ToInt64(fu.BalanceAmount)
+			if err != nil {
+				configs.Logger.Error(err)
+			} else {
+				u = t - u
+				specialUse += u
 			}
 
 			items[i] = models.SummaryItems{

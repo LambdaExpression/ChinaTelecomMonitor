@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-var Version = "v1.0.5"
+var Version = "v1.0.6"
 var GoVersion = "not set"
 var GitCommit = "not set"
 var BuildTime = "not set"
@@ -62,7 +62,7 @@ func initFlag() {
 	flag.StringVar(&configs.DataPath, "dataPath", "./data", "--dataPath ./data # 数据日志文件保存路径")
 
 	flag.BoolVar(&configs.Dev, "dev", false, "--dev false # 开发模式,开启后将支持以下接口： /refresh 手动更新流量，/loginLog 查看登录截图日志")
-	flag.BoolVar(&configs.PrintVersion, "version", false, "打印程序构建版本")
+	flag.BoolVar(&configs.PrintVersion, "version", false, "--version 打印程序构建版本")
 
 	flag.Parse()
 }

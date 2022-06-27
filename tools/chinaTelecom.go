@@ -113,12 +113,23 @@ func login(ctx context.Context, username, password string) {
 		chromedp.Navigate(indexUrl),
 	)
 
-	time.Sleep(8 * time.Second)
+	for i := 0; i < 180; i++ {
+		configs.Logger.Info("189 environmental inspection ", i+1)
+		time.Sleep(1 * time.Second)
+		err = chromedp.Run(ctx,
+			chromedp.CaptureScreenshot(&b1),
+			chromedp.OuterHTML("body", &bodyHtml, chromedp.ByQuery),
+		)
+		if strings.Contains(bodyHtml, "id=\"j-account-login\"") {
+			break
+		}
+	}
 
-	err = chromedp.Run(ctx,
-		chromedp.CaptureScreenshot(&b1),
-		chromedp.OuterHTML("body", &bodyHtml, chromedp.ByQuery),
-	)
+	if err != nil {
+		configs.Logger.Error("error", err)
+		outLogonPng(b1, b2, b3)
+		return
+	}
 
 	if !strings.Contains(bodyHtml, "id=\"j-account-login\" class=\"bg-login-wrap block\"") {
 		err = chromedp.Run(ctx,

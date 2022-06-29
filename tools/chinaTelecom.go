@@ -111,39 +111,36 @@ func login(ctx context.Context, username, password string) {
 	err := chromedp.Run(ctx,
 		chromedp.Emulate(device.IPhone8Plus),
 		chromedp.Navigate(indexUrl),
+		chromedp.CaptureScreenshot(&b1),
 	)
-
-	for i := 0; i < 180; i++ {
-		configs.Logger.Info("189 environmental inspection ", i+1)
-		time.Sleep(1 * time.Second)
-		err = chromedp.Run(ctx,
-			chromedp.CaptureScreenshot(&b1),
-			chromedp.OuterHTML("body", &bodyHtml, chromedp.ByQuery),
-		)
-		if strings.Contains(bodyHtml, "id=\"j-account-login\"") {
-			break
-		}
-	}
 
 	if err != nil {
 		configs.Logger.Error("error", err)
+		chromedp.Run(ctx, chromedp.CaptureScreenshot(&b3))
 		outLogonPng(b1, b2, b3)
 		return
 	}
 
-	if !strings.Contains(bodyHtml, "id=\"j-account-login\" class=\"bg-login-wrap block\"") {
+	b3 = wait(ctx, `id="j-account-login"`, 180, "189 environmental inspection ")
+	if b3 != nil {
+		outLogonPng(b1, b2, b3)
+		return
+	}
+
+	chromedp.Run(ctx, chromedp.OuterHTML("body", &bodyHtml, chromedp.ByQuery))
+	if !strings.Contains(bodyHtml, `id="j-account-login" class="bg-login-wrap block"`) {
 		err = chromedp.Run(ctx,
 			chromedp.WaitVisible(`j-sms-userName`, chromedp.ByID),
 			chromedp.Click(`j-other-login-way2`, chromedp.ByID),
 			chromedp.WaitVisible(`j-login-btn`, chromedp.ByID),
 			chromedp.OuterHTML("j-agreement-checkbox", &jAgreementCheckboxHtml, chromedp.ByID),
 		)
-	}
-
-	if err != nil {
-		configs.Logger.Error("error", err)
-		outLogonPng(b1, b2, b3)
-		return
+		if err != nil {
+			configs.Logger.Error("error", err)
+			chromedp.Run(ctx, chromedp.CaptureScreenshot(&b3))
+			outLogonPng(b1, b2, b3)
+			return
+		}
 	}
 
 	if !strings.Contains(jAgreementCheckboxHtml, "ag-ckbox") {
@@ -152,6 +149,7 @@ func login(ctx context.Context, username, password string) {
 		)
 		if err != nil {
 			configs.Logger.Error("error", err)
+			chromedp.Run(ctx, chromedp.CaptureScreenshot(&b3))
 			outLogonPng(b1, b2, b3)
 			return
 		}
@@ -162,7 +160,21 @@ func login(ctx context.Context, username, password string) {
 		chromedp.SendKeys(`j-password`, password, chromedp.ByID),
 		chromedp.Click(`j-login-btn`, chromedp.ByID),
 		chromedp.CaptureScreenshot(&b2),
-		chromedp.WaitVisible(`_userMobile`, chromedp.ByID),
+	)
+	if err != nil {
+		configs.Logger.Error("error", err)
+		chromedp.Run(ctx, chromedp.CaptureScreenshot(&b3))
+		outLogonPng(b1, b2, b3)
+		return
+	}
+
+	b3 = wait(ctx, `id="_userMobile"`, 180, "189 login inspection ")
+	if b3 != nil {
+		outLogonPng(b1, b2, b3)
+		return
+	}
+
+	err = chromedp.Run(ctx,
 		chromedp.Sleep(2*time.Second),
 		chromedp.CaptureScreenshot(&b3),
 		chromedp.Location(&collectLink),
@@ -171,8 +183,10 @@ func login(ctx context.Context, username, password string) {
 		//chromedp.OuterHTML("html", &res, chromedp.ByQuery),
 		chromedp.OuterHTML("title", &res, chromedp.ByQuery),
 	)
+
 	if err != nil {
 		configs.Logger.Error("error", err)
+		chromedp.Run(ctx, chromedp.CaptureScreenshot(&b3))
 		outLogonPng(b1, b2, b3)
 		return
 	} else {
@@ -182,6 +196,7 @@ func login(ctx context.Context, username, password string) {
 	c, err := json.Marshal(ck)
 	if err != nil {
 		configs.Logger.Error("cookie error", err)
+		chromedp.Run(ctx, chromedp.CaptureScreenshot(&b3))
 		outLogonPng(b1, b2, b3)
 		return
 	}
@@ -200,6 +215,26 @@ func login(ctx context.Context, username, password string) {
 
 	outLogonPng(b1, b2, b3)
 
+}
+
+func wait(ctx context.Context, checkHtml string, timeout int, logPrefix string) (b3 []byte) {
+	var bodyHtml string
+	for i := 0; i <= timeout; i++ {
+		configs.Logger.Info(logPrefix, i+1)
+		time.Sleep(1 * time.Second)
+		chromedp.Run(ctx,
+			chromedp.CaptureScreenshot(&b3),
+			chromedp.OuterHTML("body", &bodyHtml, chromedp.ByQuery),
+		)
+		if strings.Contains(bodyHtml, checkHtml) {
+			break
+		}
+		if i == timeout {
+			chromedp.Run(ctx, chromedp.CaptureScreenshot(&b3))
+			return b3
+		}
+	}
+	return nil
 }
 
 func outLogonPng(b1 []byte, b2 []byte, b3 []byte) {

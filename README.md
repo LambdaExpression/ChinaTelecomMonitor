@@ -9,6 +9,19 @@
 
 *(注：应用如果在正常期间突然无法使用，大概率是电信登录页面的页面元素发生改变，导致登录逻辑无法正常执行。在保证自身使用的是最新版本后，任然无法解决可通过 [Issuess](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues) 进行反馈。电信的这种行为，个人怀疑这是电信的防爬虫策略，现阶段应用也只能发现一种就通过版本迭代兼容一种)*
 
+**v1.0.6**
+
+update:
+ - 优化 电信检查环境时间逻辑 [#9](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/9)
+
+**v1.0.5**
+
+add:
+ - 添加 /show/flowPackage 接口 [#8](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/8)
+
+update:
+ - 更新 通用流量和专用流量统计规则 [#8](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/8)
+
 **v1.0.4**
 
 add:
@@ -38,7 +51,7 @@ update：
 - 1.准备一个可正常登录[电信](https://e.189.cn/wap/index.do)账号密码
 - 2.安装 docker (可自行查询谷哥或度娘)
 - 3.执行 `docker pull lambdaexpression/headless-shell-utf-8:95.0.4638.32`，下载 [lambdaexpression/headless-shell-utf-8](https://hub.docker.com/r/lambdaexpression/headless-shell-utf-8) 容器到本地
-- 4.下载本应用 `wget https://github.com/LambdaExpression/ChinaTelecomMonitor/releases/download/v1.0.4/China_Telecom_Monitor_amd64`
+- 4.下载本应用 `wget https://github.com/LambdaExpression/ChinaTelecomMonitor/releases/download/v1.0.6/China_Telecom_Monitor_amd64`
 - 5.应用授权 `chmod +x ./China_Telecom_Monitor_amd64`
 
 ### 2.启动应用
@@ -71,6 +84,23 @@ curl http://127.0.0.1:8081/show/flow
         "voiceUsage":0,                      // 通话语音使用量，单位分钟
         "voiceAmount":500,                   // 通话语音总量，单位分钟
         "createTime":"2022-04-26 15:37:47"   // 获取数据时间
+        "items": [                           // 具体流量使用情况
+                     {
+                        "name": "国内流量",
+                        "use": 12276406,
+                        "total": 83159794
+                     },
+                     {
+                        "name": "定向流量",
+                        "use": 0,
+                        "total": 41943040
+                     },
+                     {
+                        "name": "闲时流量",
+                        "use": 0,
+                        "total": 41943040
+                     }
+         ]
     }
 }
 ```
@@ -109,17 +139,22 @@ Usage of ./China_Telecom_Monitor_amd64:
   -username string
     	--username 1xxxxxxxxxx #电信账号用户名, 必填
   -version
-    	打印程序构建版本
+    	--version 打印程序构建版本
 
 ```
 
-**部分接口说明**
+**额外接口说明**
 
 ```
 curl http://127.0.0.1:8081/show/detail
 ```
 
-这个接口主要提供给有二次开发需求的用户使用。接口的数据是从电信的 https://e.189.cn/store/user/package_detail.do 接口获取而来，没有进行数据二次处理，完全是原始数据输出。[#4](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/4)
+这些接口主要提供给有二次开发需求的用户使用。接口的数据是从电信的 https://e.189.cn/store/user/package_detail.do 接口获取而来，没有进行数据二次处理，完全是原始数据输出。[#4](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/4)
 
 
+```
+curl http://127.0.0.1:8081/show/flowPackage
+```
+
+接口数据来源自 https://e.189.cn/store/wap/flowPackage.do ，数据同样不进行二次处理，原样输出 [#8](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/8#issuecomment-1165158557)
 

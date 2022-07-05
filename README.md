@@ -9,6 +9,11 @@
 
 *(注：应用如果在正常期间突然无法使用，大概率是电信登录页面的页面元素发生改变，导致登录逻辑无法正常执行。在保证自身使用的是最新版本后，任然无法解决可通过 [Issuess](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues) 进行反馈。电信的这种行为，个人怀疑这是电信的防爬虫策略，现阶段应用也只能发现一种就通过版本迭代兼容一种)*
 
+**v1.0.6.1**
+
+update:
+ - 优化 网页截图
+
 **v1.0.6**
 
 update:
@@ -51,7 +56,7 @@ update：
 - 1.准备一个可正常登录[电信](https://e.189.cn/wap/index.do)账号密码
 - 2.安装 docker (可自行查询谷哥或度娘)
 - 3.执行 `docker pull lambdaexpression/headless-shell-utf-8:95.0.4638.32`，下载 [lambdaexpression/headless-shell-utf-8](https://hub.docker.com/r/lambdaexpression/headless-shell-utf-8) 容器到本地
-- 4.下载本应用 `wget https://github.com/LambdaExpression/ChinaTelecomMonitor/releases/download/v1.0.6/China_Telecom_Monitor_amd64`
+- 4.下载本应用 `wget https://github.com/LambdaExpression/ChinaTelecomMonitor/releases/download/v1.0.6.1/China_Telecom_Monitor_amd64`
 - 5.应用授权 `chmod +x ./China_Telecom_Monitor_amd64`
 
 ### 2.启动应用

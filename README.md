@@ -163,3 +163,17 @@ curl http://127.0.0.1:8081/show/flowPackage
 
 接口数据来源自 https://e.189.cn/store/wap/flowPackage.do ，数据同样不进行二次处理，原样输出 [#8](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/8#issuecomment-1165158557)
 
+**服务后台运行**
+
+我通过 issues ，发现有部分用户，并不会让服务在后台不挂断运行。我在这里只提出其中一种方案，使用 Linux的 `nohup` 命令。具体的还请大家在网上自行学习。
+下面是结合 `nohup` 后的启动命令，这样就能保证大家退出服务器后，服务仍然在运行
+```
+$ nohup ./China_Telecom_Monitor_amd64 --prot 8081 --dockerProt 9222 --username '电信账号' --password '电信密码' >/dev/null &
+```
+
+**异常情况**
+
+如果上述第3步，返回数据有问题或无法访问。
+- 1. 先查看一下同级目录下的 `./data/login/01.png`、`./data/login/02.png` 和 `./data/login/03.png` 这三张截图，是否有存在账号密码错误、登录要求输入验证码等情况。处理“登录要求输入验证码”，需要先手动访问 [https://e.189.cn/wap/index.do](https://e.189.cn/wap/index.do) 进行一次正常登陆，正常情况下就能恢复了。
+- 2. 如果上述截图无法找到问题，可以查看一下 `./data/log/stdout.log` 是否存在异常信息（注意：首次启动时提示 `open ./data/cookie.json: no such file or directory` 是正常情况）
+

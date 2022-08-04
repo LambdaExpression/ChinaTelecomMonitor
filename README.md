@@ -166,6 +166,7 @@ curl http://127.0.0.1:8081/show/flowPackage
 **服务后台运行**
 
 我通过 issues ，发现有部分用户，并不会让服务在后台不挂断运行。我在这里只提出其中一种方案，使用 Linux的 `nohup` 命令。具体的还请大家在网上自行学习。
+
 下面是结合 `nohup` 后的启动命令，这样就能保证大家退出服务器后，服务仍然在运行
 ```
 $ nohup ./China_Telecom_Monitor_amd64 --prot 8081 --dockerProt 9222 --username '电信账号' --password '电信密码' >/dev/null &

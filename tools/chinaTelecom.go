@@ -121,7 +121,27 @@ func login(ctx context.Context, username, password string) {
 		return
 	}
 
-	b3 = wait(ctx, `id="j-account-login"`, 180, "189 environmental inspection ")
+	b3 = wait(ctx, `error-btn ok-btn error-btn-err"`, 180, "189 wait show other login ")
+	if b3 != nil {
+		outLogonPng(b1, b2, b3)
+		return
+	}
+
+	chromedp.Run(ctx, chromedp.OuterHTML("body", &bodyHtml, chromedp.ByQuery))
+	if strings.Contains(bodyHtml, `ok-btn`) {
+		err = chromedp.Run(ctx,
+			chromedp.Click(`a[class="error-btn ok-btn error-btn-err"]`, chromedp.ByQuery),
+			chromedp.Sleep(2*time.Second),
+		)
+		if err != nil {
+			configs.Logger.Error("error ", err)
+			chromedp.Run(ctx, chromedp.CaptureScreenshot(&b3))
+			outLogonPng(b1, b2, b3)
+			return
+		}
+	}
+
+	b3 = wait(ctx, `id="j-account-login"`, 10, "189 environmental inspection ")
 	if b3 != nil {
 		outLogonPng(b1, b2, b3)
 		return

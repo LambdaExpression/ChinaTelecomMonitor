@@ -47,6 +47,7 @@ func ChinaTelecomLogin(username, password string) {
 			continue
 		}
 	}
+	time.Sleep(10 * time.Second)
 
 	timeout := time.Duration(configs.TimeOut) * time.Second
 	cromeCtx, cromeCtxCancel := GetChromeCtx()

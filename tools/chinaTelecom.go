@@ -131,7 +131,7 @@ func login(ctx context.Context, username, password string) {
 	chromedp.Run(ctx, chromedp.OuterHTML("body", &bodyHtml, chromedp.ByQuery))
 	if strings.Contains(bodyHtml, `ok-btn`) {
 		err = chromedp.Run(ctx,
-			chromedp.Click(`a[class="error-btn ok-btn error-btn-err"]`, chromedp.ByQuery),
+			chromedp.Click(`a[class="ok-btn"]`, chromedp.ByQuery),
 			chromedp.Sleep(2*time.Second),
 		)
 		if err != nil {

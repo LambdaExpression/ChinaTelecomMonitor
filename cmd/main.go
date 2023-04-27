@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-var Version = "v1.0.7.1"
+var Version = "v1.0.7.2"
 var GoVersion = "not set"
 var GitCommit = "not set"
 var BuildTime = "not set"

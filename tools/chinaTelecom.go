@@ -122,7 +122,7 @@ func login(ctx context.Context, username, password string) {
 		return
 	}
 
-	b3 = wait(ctx, `error-btn ok-btn error-btn-err"`, 180, "189 wait show other login ")
+	b3 = wait(ctx, `ok-btn`, 180, "189 wait show other login ")
 	if b3 != nil {
 		outLogonPng(b1, b2, b3)
 		return

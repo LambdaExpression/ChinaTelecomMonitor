@@ -4,84 +4,32 @@
 
 **中国电信 手机话费、流量、语音通话监控**
 
-本工具是部署在服务器(或x86软路由等设备) 使用 docker [lambdaexpression/headless-shell-utf-8](https://hub.docker.com/r/lambdaexpression/headless-shell-utf-8) 进行模拟浏览器登录获取cookie，按需定时获取电信手机话费、流量、语音通话使用情况，通过接口返回数据。
+本工具是部署在服务器(或x86软路由等设备) 使用 接口模拟登录获取cookie，按需定时获取电信手机话费、流量、语音通话使用情况，通过接口返回数据。
 可配合 Scriptables 插件 [ChinaTelecomPanel](https://lambdaexpression.github.io/ScriptablesComponent/ChinaTelecomPanel/) 一起使用
 
 
 ### 版本更新
 
-*(注：应用如果在正常期间突然无法使用，大概率是电信登录页面的页面元素发生改变，导致登录逻辑无法正常执行。在保证自身使用的是最新版本后，任然无法解决可通过 [Issuess](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues) 进行反馈。电信的这种行为，个人怀疑这是电信的防爬虫策略，现阶段应用也只能发现一种就通过版本迭代兼容一种)*
 
-
-**v1.0.7.2**
+**v2.0**
 
 update:
- - 更新 电信页面解析逻辑
-
-**v1.0.7.1**
-
-update:
- - 优化 docker容器连接
- 
-**v1.0.7**
-
-add:
- - 兼容 电信网页登录时，弹出的"当前环境不支持免密登录"提示。(因为这个弹框，旧版本基本都已经无法正常使用，建议都升级到最新版本)
-
-**v1.0.6.1**
-
-update:
- - 优化 网页截图
-
-**v1.0.6**
-
-update:
- - 优化 电信检查环境时间逻辑 [#9](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/9)
-
-**v1.0.5**
-
-add:
- - 添加 /show/flowPackage 接口 [#8](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/8)
-
-update:
- - 更新 通用流量和专用流量统计规则 [#8](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/8)
-
-**v1.0.4**
-
-add:
- - 添加 -version 版本打印
-
-update:
-
- - 优化 自适应电信登录页面登录动作 [#5](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/5)
-
-**v1.0.3**
-
-add:
- - 添加 /show/detail 接口 [#4](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/4)
-
-**v1.0.2**
-
-add:
- - 添加自动判断是否勾选用户隐私协议 [#3](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/3)
-
-**v1.0.1**
-
-update：
- - 修复新版本电信登录页面默认勾选隐私协议，导致登录失败问题 [#1](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/1)
+- 更新 电信请求接口。从容器化模拟登录，更换为纯接口调用登录
+- 调整 日志打印规则
+- 新增 /show/qryImportantData、/show/userFluxPackage 接口（需要启动应用时开启dev模式才能访问）
+- 删除 /show/detail、/show/flowPackage 接口
+- 删除 dockerProt、dockerWaitTime 启动参数
 
 ### 1.准备
 
-- 1.准备一个可正常登录[电信](https://e.189.cn/wap/index.do)账号密码
-- 2.安装 docker (可自行查询谷哥或度娘)
-- 3.执行 `docker pull lambdaexpression/headless-shell-utf-8:95.0.4638.32`，下载 [lambdaexpression/headless-shell-utf-8](https://hub.docker.com/r/lambdaexpression/headless-shell-utf-8) 容器到本地
-- 4.下载本应用 `wget https://github.com/LambdaExpression/ChinaTelecomMonitor/releases/download/v1.0.6.1/China_Telecom_Monitor_amd64`
-- 5.应用授权 `chmod +x ./China_Telecom_Monitor_amd64`
+- 1.准备一个可正常登录 电信APP 的账号密码（**注意：电信APP 的密码 和以前的h5登录密码不是同一个**）
+- 2.下载本应用 `wget https://github.com/LambdaExpression/ChinaTelecomMonitor/releases/download/v2.0/China_Telecom_Monitor_amd64`
+- 3.应用授权 `chmod +x ./China_Telecom_Monitor_amd64`
 
 ### 2.启动应用
 
 ```
-$ ./China_Telecom_Monitor_amd64 --prot 8081 --dockerProt 9222 --username '电信账号' --password '电信密码'
+$ ./China_Telecom_Monitor_amd64 --prot 8081 --username '电信账号' --password '电信密码'
 ```
 
 ### 3.测试访问
@@ -141,11 +89,7 @@ Usage of ./China_Telecom_Monitor_amd64:
   -dataPath string
     	--dataPath ./data # 数据日志文件保存路径 (default "./data")
   -dev
-    	--dev false # 开发模式,开启后将支持以下接口： /refresh 手动更新流量，/loginLog 查看登录截图日志
-  -dockerProt string
-    	--dockerProt 9222 #登录容器使用的端口 (default "9222")
-  -dockerWaitTime int
-    	--dockerWaitTime 60 #登录容器等待启动时间 (default 60)
+    	--dev false # 开发模式,开启后将支持以下接口： /refresh 手动更新流量 和 /show/qryImportantData /show/userFluxPackage 这里两个电信接口
   -intervalsTime int
     	--intervalsTime 180 #接口防止重刷时间 (default 180)
   -logEncoding string
@@ -169,15 +113,30 @@ Usage of ./China_Telecom_Monitor_amd64:
 
 **额外接口说明**
 
+
 ```
-curl http://127.0.0.1:8081/show/detail
+curl http://127.0.0.1:8081/show/qryImportantData
+```
+
+这些接口主要提供给有二次开发需求的用户使用。接口的数据是从电信的 https://appfuwu.189.cn:9021/query/qryImportantData 接口获取而来，没有进行数据二次处理，完全是原始数据输出。[#4](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/4)
+
+
+```
+curl http://127.0.0.1:8081/show/userFluxPackage
+```
+
+这些接口主要提供给有二次开发需求的用户使用。接口的数据是从电信的 https://appfuwu.189.cn:9021/query/userFluxPackage 接口获取而来，没有进行数据二次处理，完全是原始数据输出。[#4](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/4)
+
+
+```
+curl http://127.0.0.1:8081/show/detail （已无法使用）
 ```
 
 这些接口主要提供给有二次开发需求的用户使用。接口的数据是从电信的 https://e.189.cn/store/user/package_detail.do 接口获取而来，没有进行数据二次处理，完全是原始数据输出。[#4](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/4)
 
 
 ```
-curl http://127.0.0.1:8081/show/flowPackage
+curl http://127.0.0.1:8081/show/flowPackage （已无法使用）
 ```
 
 接口数据来源自 https://e.189.cn/store/wap/flowPackage.do ，数据同样不进行二次处理，原样输出 [#8](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/8#issuecomment-1165158557)
@@ -188,12 +147,16 @@ curl http://127.0.0.1:8081/show/flowPackage
 
 下面是结合 `nohup` 后的启动命令，这样就能保证大家退出服务器后，服务仍然在运行
 ```
-$ nohup ./China_Telecom_Monitor_amd64 --prot 8081 --dockerProt 9222 --username '电信账号' --password '电信密码' >/dev/null &
+$ nohup ./China_Telecom_Monitor_amd64 --prot 8081 --username '电信账号' --password '电信密码' >/dev/null &
 ```
 
 **异常情况**
 
-如果上述第3步，返回数据有问题或无法访问。
-- 1. 先查看一下同级目录下的 `./data/login/01.png`、`./data/login/02.png` 和 `./data/login/03.png` 这三张截图，是否有存在账号密码错误、登录要求输入验证码等情况。处理“登录要求输入验证码”，需要先手动访问 [https://e.189.cn/wap/index.do](https://e.189.cn/wap/index.do) 进行一次正常登陆，正常情况下就能恢复了。
-- 2. 如果上述截图无法找到问题，可以查看一下 `./data/log/stdout.log` 是否存在异常信息（注意：首次启动时提示 `open ./data/cookie.json: no such file or directory` 是正常情况）
 
+```json
+{"headerInfos":{"code":"0000","reason":"操作成功"},"responseData":{"resultCode":"1000","resultDesc":"请求失败","attach":"","data":null}}
+```
+遇到“请求失败”，请确保在 **手机电信APP** 内测试一下登录账号密码是否正确
+
+
+### 最后感谢 [boxjs](https://github.com/gsons/boxjs) 项目开源提供的电信接口

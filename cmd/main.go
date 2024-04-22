@@ -6,18 +6,16 @@ import (
 	"China_Telecom_Monitor/tools"
 	"flag"
 	"fmt"
-	"github.com/LambdaExpression/surf/agent"
-	"github.com/LambdaExpression/surf/surf"
 	"github.com/golang-module/carbon/v2"
 	"github.com/kataras/iris/v12"
 	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"gopkg.in/natefinch/lumberjack.v2"
 	"strings"
-	"time"
 )
 
-var Version = "v1.0.7.2"
+var Version = "v2.0"
 var GoVersion = "not set"
 var GitCommit = "not set"
 var BuildTime = "not set"
@@ -36,7 +34,6 @@ func main() {
 		return
 	}
 
-	initBrowser()
 	initCron()
 
 	// 初始化流量获取
@@ -48,20 +45,18 @@ func main() {
 // 初始化配置
 func initFlag() {
 	flag.StringVar(&configs.Prot, "prot", "8080", "--prot 8080")
-	flag.StringVar(&configs.DockerProt, "dockerProt", "9222", "--dockerProt 9222 #登录容器使用的端口")
 	flag.StringVar(&configs.Username, "username", "", "--username 1xxxxxxxxxx #电信账号用户名, 必填")
 	flag.StringVar(&configs.Password, "password", "", "--password xxxxx #电信账号密码, 必填")
 	flag.IntVar(&configs.LoginIntervalTime, "loginIntervalTime", 43200, "--loginIntervalTime 43200 #电信登录间隔时间（防止被封号），秒")
 	flag.Int64Var(&configs.TimeOut, "timeOut", 30, "--timeOut 30 #访问电信接口请求超时时间，秒")
 	flag.IntVar(&configs.IntervalsTime, "intervalsTime", 180, "--intervalsTime 180 #接口防止重刷时间")
-	flag.IntVar(&configs.DockerWaitTime, "dockerWaitTime", 60, "--dockerWaitTime 60 #登录容器等待启动时间")
 
 	flag.StringVar(&configs.LogLevel, "logLevel", "info", "--logLevel info # 日志等级")
 	flag.StringVar(&configs.LogEncoding, "logEncoding", "console", "--logEncoding console # 日志输出格式 console 或 json")
 
 	flag.StringVar(&configs.DataPath, "dataPath", "./data", "--dataPath ./data # 数据日志文件保存路径")
 
-	flag.BoolVar(&configs.Dev, "dev", false, "--dev false # 开发模式,开启后将支持以下接口： /refresh 手动更新流量，/loginLog 查看登录截图日志")
+	flag.BoolVar(&configs.Dev, "dev", false, "--dev false # 开发模式,开启后将支持以下接口： /refresh 手动更新流量 和 /show/qryImportantData /show/userFluxPackage 这里两个电信接口")
 	flag.BoolVar(&configs.PrintVersion, "version", false, "--version 打印程序构建版本")
 
 	flag.Parse()
@@ -91,8 +86,15 @@ func initLogger() {
 	level := getLevel()
 	encoding := configs.LogEncoding
 	// 保留两个变量，但设置成同一个文件
-	stdout := configs.DataPath + "/log/stdout.log"
-	stderr := configs.DataPath + "/log/stdout.log"
+	//stdout := configs.DataPath + "/log/stdout.log"
+	//stderr := configs.DataPath + "/log/stderr.log"
+
+	stdout := &lumberjack.Logger{
+		Filename:   configs.DataPath + "/log/stdout.log",
+		MaxSize:    10, // 每个日志文件的最大大小，单位为MB
+		MaxBackups: 10, // 保留的旧日志文件的最大数量
+		MaxAge:     60, // 保留的旧日志文件的最大天数
+	}
 
 	encoderConfig := zapcore.EncoderConfig{
 		TimeKey:        "time",
@@ -114,11 +116,9 @@ func initLogger() {
 		Encoding:      encoding,      // 输出格式 console 或 json
 		EncoderConfig: encoderConfig, // 编码器配置
 		//InitialFields:    map[string]interface{}{"serviceName": "gogs-backup"}, // 初始化字段，如：添加一个服务器名称
-		OutputPaths:      []string{"stdout", stdout}, // 输出到指定文件 stdout（标准输出，正常颜色） stderr（错误输出，红色）
-		ErrorOutputPaths: []string{"stderr", stderr},
+		OutputPaths:      []string{"stdout", stdout.Filename}, // 输出到指定文件 stdout（标准输出，正常颜色） stderr（错误输出，红色）
+		ErrorOutputPaths: []string{"stderr", stdout.Filename},
 	}
-	tools.Create(stdout)
-	tools.Create(stderr)
 	logger, err := config.Build()
 	if err != nil {
 		panic(fmt.Sprintf("logger 初始化失败: %v", err))
@@ -152,15 +152,6 @@ func getLevel() zapcore.Level {
 	return level
 }
 
-// 初始化 浏览器
-func initBrowser() {
-	bow := surf.NewBrowser()
-	bow.SetUserAgent(agent.Chrome())
-	bow.HistoryJar().SetMax(1)
-	bow.SetTimeout(time.Duration(configs.TimeOut) * time.Second)
-	configs.Browser = bow
-}
-
 // 初始化 定时任务
 func initCron() {
 	cronApp := cron.New(cron.WithSeconds()) //精确到秒
@@ -178,10 +169,9 @@ func initCron() {
 // 定时获取流量信息
 func cronSummary() {
 	t := carbon.Now()
-	detailRequest := tools.GetFlowDetail(true)
-	balance := tools.GetBalance(true)
-	flowPackage := tools.GetFlowPackage(true)
-	configs.Summary = tools.ToSummary2(detailRequest, flowPackage, balance, configs.Username, t)
+	qryImportantData := tools.GetQryImportantData(configs.Username, configs.Password)
+	//userFluxPackage := tools.GetUserFluxPackage(configs.Username, configs.Password)
+	configs.Summary = tools.ToSummary(qryImportantData, configs.Username, t)
 }
 
 // 初始化访问接口
@@ -193,8 +183,9 @@ func initIris() {
 	irisApp.Handle(iris.MethodGet, "/show/flowPackage", flowPackage)
 	if configs.Dev {
 		irisApp.Handle(iris.MethodGet, "/refresh", refresh)
-		irisApp.Handle(iris.MethodGet, "/image/{filename:string}", image)
-		irisApp.Handle(iris.MethodGet, "/loginLog", loginLog)
+
+		irisApp.Handle(iris.MethodGet, "/show/qryImportantData", qryImportantData)
+		irisApp.Handle(iris.MethodGet, "/show/userFluxPackage", userFluxPackage)
 	}
 	err := irisApp.Run(iris.Addr(":" + configs.Prot))
 	if err != nil {
@@ -220,42 +211,52 @@ func flow(ctx iris.Context) {
 	flowLastTime = carbon.Now()
 
 	t := carbon.Now()
-	detailRequest := tools.GetFlowDetail(false)
-	if detailRequest.Result != 0 {
-		go cronSummary()
-	} else {
-		balance := tools.GetBalance(true)
-		flowPackage := tools.GetFlowPackage(true)
-		configs.Summary = tools.ToSummary2(detailRequest, flowPackage, balance, configs.Username, t)
-	}
+
+	qryImportantData := tools.GetQryImportantData(configs.Username, configs.Password)
+	configs.Summary = tools.ToSummary(qryImportantData, configs.Username, t)
+
 	summary := desensitization(configs.Summary)
 	ctx.JSON(iris.Map{"code": 200, "data": summary})
 }
 
-var packageDetailVisitLastTime carbon.Carbon
-var packageDetailDetailRequest *models.DetailRequest
-
 func packageDetail(ctx iris.Context) {
-	if carbon.Now().Lt(packageDetailVisitLastTime.AddSeconds(configs.IntervalsTime)) {
-		ctx.JSON(&packageDetailDetailRequest)
-		return
-	}
-	packageDetailDetailRequest = tools.GetFlowDetail(false)
-	packageDetailVisitLastTime = carbon.Now()
-	ctx.JSON(&packageDetailDetailRequest)
+	ctx.JSON(&models.DetailRequest{
+		Result:          410,
+		ParaFieldResult: "接口已失效",
+	})
 }
 
-var flowPackageVisitLastTime carbon.Carbon
-var flowPackageDetailRequest *models.FlowPackage
-
 func flowPackage(ctx iris.Context) {
-	if carbon.Now().Lt(flowPackageVisitLastTime.AddSeconds(configs.IntervalsTime)) {
-		ctx.JSON(&flowPackageDetailRequest)
+	ctx.JSON(&models.FlowPackage{
+		Result: 410,
+		Msg:    "接口已失效",
+	})
+}
+
+var qryImportantVisitLastTime carbon.Carbon
+var qryImportantDetailRequest *models.Result[models.ImportantData]
+
+func qryImportantData(ctx iris.Context) {
+	if carbon.Now().Lt(qryImportantVisitLastTime.AddSeconds(configs.IntervalsTime)) {
+		ctx.JSON(&qryImportantDetailRequest)
 		return
 	}
-	flowPackageDetailRequest = tools.GetFlowPackage(false)
-	flowPackageVisitLastTime = carbon.Now()
-	ctx.JSON(&flowPackageDetailRequest)
+	qryImportantDetailRequest = tools.GetQryImportantData(configs.Username, configs.Password)
+	qryImportantVisitLastTime = carbon.Now()
+	ctx.JSON(&qryImportantDetailRequest)
+}
+
+var userFluxPackageVisitLastTime carbon.Carbon
+var userFluxPackageDetailRequest *models.Result[models.UserFluxPackageData]
+
+func userFluxPackage(ctx iris.Context) {
+	if carbon.Now().Lt(userFluxPackageVisitLastTime.AddSeconds(configs.IntervalsTime)) {
+		ctx.JSON(&userFluxPackageDetailRequest)
+		return
+	}
+	userFluxPackageDetailRequest = tools.GetUserFluxPackage(configs.Username, configs.Password)
+	userFluxPackageVisitLastTime = carbon.Now()
+	ctx.JSON(&userFluxPackageDetailRequest)
 }
 
 func desensitization(summary models.Summary) models.Summary {
@@ -275,30 +276,4 @@ func desensitization(summary models.Summary) models.Summary {
 func refresh(ctx iris.Context) {
 	go cronSummary()
 	ctx.JSON(iris.Map{"code": 200})
-}
-
-func image(ctx iris.Context) {
-	filename := ctx.Params().GetStringDefault("filename", "01.png")
-	ctx.ServeFile(configs.DataPath+"/login/"+filename, false)
-}
-
-func loginLog(ctx iris.Context) {
-	ctx.HTML(`
-		<html>
-		  <div style="text-align: center;">
-			<br/>
-			<h3>登录图片1</h3>
-			<br/>
-			<image style="max-width:500px" src="/image/01.png"></image>
-			<br/>
-			<h3>登录图片2</h3>
-			<br/>
-			<image style="max-width:500px" src="/image/02.png"></image>
-			<br/>
-			<h3>登录图片3</h3>
-			<br/>
-			<image style="max-width:500px" src="/image/03.png"></image>
-		  </div>
-		</html>
-	`)
 }

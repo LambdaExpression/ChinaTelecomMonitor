@@ -115,31 +115,20 @@ Usage of ./China_Telecom_Monitor_amd64:
 
 
 ```
+// 数据来源 https://appfuwu.189.cn:9021/query/qryImportantData
 curl http://127.0.0.1:8081/show/qryImportantData
-```
 
-这些接口主要提供给有二次开发需求的用户使用。接口的数据是从电信的 https://appfuwu.189.cn:9021/query/qryImportantData 接口获取而来，没有进行数据二次处理，完全是原始数据输出。[#4](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/4)
-
-
-```
+// 数据来源 https://appfuwu.189.cn:9021/query/userFluxPackage
 curl http://127.0.0.1:8081/show/userFluxPackage
-```
 
-这些接口主要提供给有二次开发需求的用户使用。接口的数据是从电信的 https://appfuwu.189.cn:9021/query/userFluxPackage 接口获取而来，没有进行数据二次处理，完全是原始数据输出。[#4](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/4)
-
-
-```
+// 数据来源 https://e.189.cn/store/user/package_detail.do
 curl http://127.0.0.1:8081/show/detail （已无法使用）
-```
 
-这些接口主要提供给有二次开发需求的用户使用。接口的数据是从电信的 https://e.189.cn/store/user/package_detail.do 接口获取而来，没有进行数据二次处理，完全是原始数据输出。[#4](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/4)
-
-
-```
+// 数据来源 https://e.189.cn/store/wap/flowPackage.do
 curl http://127.0.0.1:8081/show/flowPackage （已无法使用）
 ```
 
-接口数据来源自 https://e.189.cn/store/wap/flowPackage.do ，数据同样不进行二次处理，原样输出 [#8](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/8#issuecomment-1165158557)
+这些接口主要提供给有二次开发需求的用户使用。没有进行数据二次处理，完全是原始数据输出。
 
 **服务后台运行**
 

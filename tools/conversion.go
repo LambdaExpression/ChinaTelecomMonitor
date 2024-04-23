@@ -14,20 +14,23 @@ func ToSummary(qryImportantData *models.Result[models.ImportantData], username s
 	}
 	data := qryImportantData.ResponseData.Data
 
-	use, _ := strconv.ParseInt(data.FlowInfo.TotalAmount.Used, 10, 64)
-	balance, _ := strconv.ParseInt(data.FlowInfo.TotalAmount.Balance, 10, 64)
-	total := use + balance
+	useFlow, _ := strconv.ParseInt(data.FlowInfo.TotalAmount.Used, 10, 64)
+	balanceFlow, _ := strconv.ParseInt(data.FlowInfo.TotalAmount.Balance, 10, 64)
+	totalFlow := useFlow + balanceFlow
 
 	generalUse, _ := strconv.ParseInt(data.FlowInfo.TotalAmount.Used, 10, 64)
 	generalBalance, _ := strconv.ParseInt(data.FlowInfo.TotalAmount.Balance, 10, 64)
 	generalTotal := generalUse + generalBalance
 
-	specialUse, _ := strconv.ParseInt(data.FlowInfo.TotalAmount.Used, 10, 64)
-	specialBalance, _ := strconv.ParseInt(data.FlowInfo.TotalAmount.Balance, 10, 64)
+	specialUse, _ := strconv.ParseInt(data.FlowInfo.SpecialAmount.Used, 10, 64)
+	specialBalance, _ := strconv.ParseInt(data.FlowInfo.SpecialAmount.Balance, 10, 64)
 	specialTotal := specialUse + specialBalance
 
 	voiceUsage, _ := strconv.ParseInt(data.VoiceInfo.VoiceDataInfo.Used, 10, 64)
 	voiceAmount, _ := strconv.ParseInt(data.VoiceInfo.VoiceDataInfo.Total, 10, 64)
+
+	balanceFloat, _ := strconv.ParseFloat(data.BalanceInfo.IndexBalanceDataInfo.Balance, 64)
+	balance := int64(balanceFloat * 100)
 
 	var items []models.SummaryItems
 	flowLists := data.FlowInfo.FlowList
@@ -54,9 +57,9 @@ func ToSummary(qryImportantData *models.Result[models.ImportantData], username s
 
 	return models.Summary{
 		Username:     username,
-		Use:          use,
-		Total:        total,
-		Balance:      total,
+		Use:          useFlow,
+		Total:        totalFlow,
+		Balance:      balance,
 		VoiceUsage:   voiceUsage,
 		VoiceAmount:  voiceAmount,
 		GeneralUse:   generalUse,

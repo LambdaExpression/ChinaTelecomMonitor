@@ -160,7 +160,7 @@ type BalanceInfo struct {
 	AdConfigs            []AdConfigs          `json:"adConfigs"`
 	ErrorMes             string               `json:"errorMes"`
 }
-type CommonFlow struct {
+type Amount struct {
 	Total     string `json:"total"`
 	Balance   string `json:"balance"`
 	Used      string `json:"used"`
@@ -169,16 +169,6 @@ type CommonFlow struct {
 	ShowField string `json:"showField"`
 	Link      string `json:"link"`
 	LinkType  string `json:"linkType"`
-}
-type TotalAmount struct {
-	Total     string      `json:"total"`
-	Balance   string      `json:"balance"`
-	Used      string      `json:"used"`
-	Over      string      `json:"over"`
-	Title     string      `json:"title"`
-	ShowField string      `json:"showField"`
-	Link      interface{} `json:"link"`
-	LinkType  interface{} `json:"linkType"`
 }
 type FlowRegion struct {
 	Title      string `json:"title"`
@@ -198,9 +188,9 @@ type FlowList struct {
 	RightTitleEnd string `json:"rightTitleEnd"`
 }
 type FlowInfo struct {
-	CommonFlow        CommonFlow          `json:"commonFlow"`
-	SpecialAmount     interface{}         `json:"specialAmount"`
-	TotalAmount       TotalAmount         `json:"totalAmount"`
+	CommonFlow        Amount              `json:"commonFlow"`
+	SpecialAmount     Amount              `json:"specialAmount"`
+	TotalAmount       Amount              `json:"totalAmount"`
 	FlowRegion        FlowRegion          `json:"flowRegion"`
 	LoopTips          []interface{}       `json:"loopTips"`
 	ImportantDataBtns []ImportantDataBtns `json:"importantDataBtns"`

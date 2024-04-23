@@ -40,17 +40,17 @@ func ToSummary(qryImportantData *models.Result[models.ImportantData], username s
 			if !strings.Contains(flowList.Title, "流量") {
 				continue
 			}
-			var use, balance int64
+			var use, balanceF int64
 			if strings.Contains(flowList.LeftTitle, "已用") {
 				use, _ = ToInt64(flowList.LeftTitle)
 			}
 			if strings.Contains(flowList.RightTitle, "剩余") {
-				use, _ = ToInt64(flowList.RightTitleHh)
+				balanceF, _ = ToInt64(flowList.RightTitleHh)
 			}
 			items[i] = models.SummaryItems{
 				Name:  flowList.Title,
 				Use:   use,
-				Total: use + balance,
+				Total: use + balanceF,
 			}
 		}
 	}

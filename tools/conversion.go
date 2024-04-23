@@ -42,7 +42,7 @@ func ToSummary(qryImportantData *models.Result[models.ImportantData], username s
 			}
 			var use, balanceF int64
 			if strings.Contains(flowList.LeftTitle, "已用") {
-				use, _ = ToInt64(flowList.LeftTitle)
+				use, _ = ToInt64(flowList.LeftTitleHh)
 			}
 			if strings.Contains(flowList.RightTitle, "剩余") {
 				balanceF, _ = ToInt64(flowList.RightTitleHh)

@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-var Version = "v2.0"
+var Version = "v2.0.1"
 var GoVersion = "not set"
 var GitCommit = "not set"
 var BuildTime = "not set"

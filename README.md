@@ -46,20 +46,20 @@ curl http://127.0.0.1:8081/show/flow
 
 ```json
 {
-    "code":200,
-    "data":{
-        "id":0,                              // 保留字段
-        "username":"",                       // 手机号，默认为空，dev 模式下脱敏显示
-        "use":12276406,                      // 总流量使用量，单位kb
-        "total":167045874,                   // 总流量总量，单位kb
-        "generalUse":12276406,               // 通用流量使用量，单位kb
-        "generalTotal":83159794,             // 通用流量总量，单位kb
-        "specialUse":0,                      // 专用流量使用量，单位kb
-        "specialTotal":83886080,             // 专用流量总量，单位kb
-        "balance":7036,                      // 话费余额，单位分
-        "voiceUsage":0,                      // 通话语音使用量，单位分钟
-        "voiceAmount":500,                   // 通话语音总量，单位分钟
-        "createTime":"2022-04-26 15:37:47"   // 获取数据时间
+    "code":200,
+    "data":{
+        "id":0,                              // 保留字段
+        "username":"",                       // 手机号，默认为空，dev 模式下脱敏显示
+        "use":12276406,                      // 总流量使用量，单位kb
+        "total":167045874,                   // 总流量总量，单位kb
+        "generalUse":12276406,               // 通用流量使用量，单位kb
+        "generalTotal":83159794,             // 通用流量总量，单位kb
+        "specialUse":0,                      // 专用流量使用量，单位kb
+        "specialTotal":83886080,             // 专用流量总量，单位kb
+        "balance":7036,                      // 话费余额，单位分
+        "voiceUsage":0,                      // 通话语音使用量，单位分钟
+        "voiceAmount":500,                   // 通话语音总量，单位分钟
+        "createTime":"2022-04-26 15:37:47"   // 获取数据时间
         "items": [                           // 具体流量使用情况
                      {
                         "name": "国内流量",
@@ -77,7 +77,7 @@ curl http://127.0.0.1:8081/show/flow
                         "total": 41943040
                      }
          ]
-    }
+    }
 }
 ```
 

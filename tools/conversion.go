@@ -18,8 +18,8 @@ func ToSummary(qryImportantData *models.Result[models.ImportantData], username s
 	balanceFlow, _ := strconv.ParseInt(data.FlowInfo.TotalAmount.Balance, 10, 64)
 	totalFlow := useFlow + balanceFlow
 
-	generalUse, _ := strconv.ParseInt(data.FlowInfo.TotalAmount.Used, 10, 64)
-	generalBalance, _ := strconv.ParseInt(data.FlowInfo.TotalAmount.Balance, 10, 64)
+	generalUse, _ := strconv.ParseInt(data.FlowInfo.CommonFlow.Used, 10, 64)
+	generalBalance, _ := strconv.ParseInt(data.FlowInfo.CommonFlow.Balance, 10, 64)
 	generalTotal := generalUse + generalBalance
 
 	specialUse, _ := strconv.ParseInt(data.FlowInfo.SpecialAmount.Used, 10, 64)

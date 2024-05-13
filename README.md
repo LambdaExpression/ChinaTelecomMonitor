@@ -32,7 +32,7 @@ update:
 
 ### 2.启动应用
 
-```
+```shell
 $ ./China_Telecom_Monitor_amd64 --prot 8081 --username '电信账号' --password '电信密码'
 ```
 
@@ -44,7 +44,7 @@ curl http://127.0.0.1:8081/show/flow
 ```
 **接口参数说明**
 
-```
+```json
 {
     "code":200,
     "data":{

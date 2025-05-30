@@ -21,6 +21,8 @@ var Dev bool
 
 var PrintVersion bool
 
+var ClientVersion string
+
 var Summary models.Summary
 
 var Logger *zap.SugaredLogger

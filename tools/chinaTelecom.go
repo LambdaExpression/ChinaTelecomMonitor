@@ -154,7 +154,7 @@ func initHeaderInfos(mobile, code, t string) models.RequestHeaderInfos {
 		t = time.Now().Format("20060102150400")
 	}
 	headerInfos := models.RequestHeaderInfos{
-		ClientType:     "#9.6.1#channel50#iPhone 14 Pro#",
+		ClientType:     "#" + configs.ClientVersion + "#channel50#iPhone 14 Pro#",
 		Timestamp:      t,
 		Code:           code,
 		ShopId:         "20002",

@@ -22,7 +22,7 @@ jobs:
       run: go build -ldflags "-X 'main.GoVersion=$(go version)' -X main.GitCommit=`git rev-parse HEAD` -X 'main.BuildTime=`date +"%Y-%m-%d %H:%m:%S"`'" -o China_Telecom_Monitor_amd64 ./cmd/main.go
 
     - name: Deliver bin
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: China_Telecom_Monitor_amd64
         path: China_Telecom_Monitor_amd64

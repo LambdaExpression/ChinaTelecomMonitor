@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"github.com/golang-module/carbon/v2"
 	"io"
+	"math/big"
 	"net/http"
 	"strconv"
 	"strings"
@@ -48,8 +49,9 @@ func checkLogin() bool {
 func login(mobile, password string) {
 
 	t := time.Now().Format("20060102150400")
-	e := fmt.Sprintf("iPhone 14 13.2.3%s%s%s%s0$$$0.", mobile, mobile, t, password)
+	deviceUid := fmt.Sprintln("%s4%4", randStr(12), randStr(3))
 
+	e := fmt.Sprintf("iPhone 14 15.4.%s%s%s%s0$$$0.", randStr(12), mobile, t, password)
 	enc, err := encrypt(e)
 	if err != nil {
 		configs.Logger.Error("error", err)
@@ -60,13 +62,13 @@ func login(mobile, password string) {
 		Content: models.LoginRequestContent{
 			FieldData: models.LoginRequestFieldData{
 				AccountType:                "",
-				Authentication:             password,
-				DeviceUid:                  fmt.Sprintf("3%s", mobile),
+				Authentication:             encodePhone(password),
+				DeviceUid:                  deviceUid,
 				IsChinatelecom:             "0",
 				LoginAuthCipherAsymmertric: enc,
 				LoginType:                  "4",
-				PhoneNum:                   transPhone(mobile),
-				SystemVersion:              "13.2.3",
+				PhoneNum:                   encodePhone(mobile),
+				SystemVersion:              "15.4.0",
 			},
 			Attach: "iPhone",
 		},
@@ -95,6 +97,18 @@ func login(mobile, password string) {
 	ti := time.Now()
 	SetToken(token, ti.Unix())
 
+}
+
+func randStr(length int) string {
+	const alphabet = "abcdef0123456789"
+
+	b := &strings.Builder{}
+	for i := 0; i < length; i++ {
+		// 生成 0 到 len(alphabet)-1 的随机索引
+		idx, _ := rand.Int(rand.Reader, big.NewInt(int64(len(alphabet))))
+		b.WriteByte(alphabet[idx.Int64()])
+	}
+	return b.String()
 }
 
 func GetQryImportantData(mobile, password string) *models.Result[models.ImportantData] {
@@ -160,9 +174,25 @@ func initHeaderInfos(mobile, code, t string) models.RequestHeaderInfos {
 		ShopId:         "20002",
 		Source:         "110003",
 		SourcePassword: "Sid98s",
-		UserLoginName:  mobile,
+		UserLoginName:  encodePhone(mobile),
 	}
 	return headerInfos
+}
+
+func encodePhone(phone string) string {
+	var encoded strings.Builder // 使用字符串构建器高效拼接字符
+
+	// 遍历手机号的每个字符
+	for _, char := range phone {
+		// 获取字符的 ASCII 码（数字字符 '0'-'9' 对应 48-57）
+		asciiCode := int(char)
+		// ASCII 码值加 2
+		newAscii := asciiCode + 2
+		// 转换为字符并写入结果
+		encoded.WriteRune(rune(newAscii))
+	}
+
+	return encoded.String() // 返回加密后的字符串
 }
 
 func toBodyStr(s any) string {
@@ -261,13 +291,6 @@ qFvy8g6VYb9QtroI09e176s+ZCtiv7hbin2cCTj99iUpnEloZm19lwHyo69u5UMi
 PMpq0/XKBO8lYhN/gwIDAQAB
 -----END PUBLIC KEY-----
 `
-	//	publicKeyPEM := `-----BEGIN PUBLIC KEY-----
-	//MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC+ugG5A8cZ3FqUKDwM57GM4io6
-	//JGcStivT8UdGt67PEOihLZTw3P7371+N47PrmsCpnTRzbTgcupKtUv8ImZalYk65
-	//dU8rjC/ridwhw9ffW2LBwvkEnDkkKKRi2liWIItDftJVBiWOh17o6gfbPoNrWORc
-	//Adcbpk2L+udld5kZNwIDAQAB
-	//-----END PUBLIC KEY-----
-	//`
 
 	// 解码公钥
 	block, err := pem.Decode([]byte(publicKeyPEM))

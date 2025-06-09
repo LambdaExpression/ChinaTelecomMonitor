@@ -261,11 +261,11 @@ func encrypt(message string) (string, error) {
 	//PMpq0/XKBO8lYhN/gwIDAQAB
 	//-----END PUBLIC KEY-----`
 	publicKeyPEM := `-----BEGIN PUBLIC KEY-----
-MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC+ugG5A8cZ3FqUKDwM57GM4io6
-JGcStivT8UdGt67PEOihLZTw3P7371+N47PrmsCpnTRzbTgcupKtUv8ImZalYk65 
-dU8rjC/ridwhw9ffW2LBwvkEnDkkKKRi2liWIItDftJVBiWOh17o6gfbPoNrWORc
-Adcbpk2L+udld5kZNwIDAQAB
------END PUBLIC KEY-----`
+	MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC+ugG5A8cZ3FqUKDwM57GM4io6
+	JGcStivT8UdGt67PEOihLZTw3P7371+N47PrmsCpnTRzbTgcupKtUv8ImZalYk65 
+	dU8rjC/ridwhw9ffW2LBwvkEnDkkKKRi2liWIItDftJVBiWOh17o6gfbPoNrWORc
+	Adcbpk2L+udld5kZNwIDAQAB
+	-----END PUBLIC KEY-----`
 
 	// 解码公钥
 	block, err := pem.Decode([]byte(publicKeyPEM))

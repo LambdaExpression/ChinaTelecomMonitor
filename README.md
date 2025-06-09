@@ -14,7 +14,7 @@
 **v2.0.2**
 
 fix:
-- 修复 电信低版本号不支持登录问题
+- 修复 电信低版本号不支持登录问题 (感谢 [@Cp0204](https://github.com/Cp0204) 提供的[解决方案](https://github.com/LambdaExpression/ChinaTelecomMonitor/issues/27#issuecomment-2954163738) )
 
 **v2.0.1**
 

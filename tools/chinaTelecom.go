@@ -50,7 +50,7 @@ func checkLogin() bool {
 func login(mobile, password string) {
 
 	t := time.Now().Format("20060102150400")
-	deviceUID := fmt.Sprintln("%s4%4", randStr(12), randStr(3))
+	deviceUID := fmt.Sprintf("%s4%4", randStr(12), randStr(3))
 
 	e := fmt.Sprintf("iPhone 14 15.4.%s%s%s%s0$$$0.", randStr(12), mobile, t, password)
 	enc, err := encrypt(e)

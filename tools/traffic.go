@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func ToInt64(s string) (int64, error) {
+func ParseTraffic(s string) (int64, error) {
 	if strings.Contains(s, "GB") {
 		sn := strings.ReplaceAll(s, "GB", "")
 		n, err := strconv.ParseFloat(sn, 64)
@@ -31,5 +31,5 @@ func ToInt64(s string) (int64, error) {
 	} else if strings.Contains(s, "B") {
 		return 0, nil
 	}
-	return 0, errors.New("文本格式不符合规范")
+	return 0, errors.New("Invalid text format")
 }

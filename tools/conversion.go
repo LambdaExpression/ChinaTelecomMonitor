@@ -2,28 +2,29 @@ package tools
 
 import (
 	"China_Telecom_Monitor/models"
-	"github.com/golang-module/carbon/v2"
 	"strconv"
 	"strings"
+
+	"github.com/golang-module/carbon/v2"
 )
 
-func ToSummary(qryImportantData *models.Result[models.ImportantData], username string, time carbon.Carbon) models.Summary {
+func ParseSummary(qryImportantData *models.Result[models.ImportantData], username string, time carbon.Carbon) models.Summary {
 	var ds models.Summary
 	if qryImportantData == nil || qryImportantData.HeaderInfos.Code != "0000" || qryImportantData.ResponseData.ResultCode != "0000" {
 		return ds
 	}
 	data := qryImportantData.ResponseData.Data
 
-	useFlow, _ := strconv.ParseInt(data.FlowInfo.TotalAmount.Used, 10, 64)
-	balanceFlow, _ := strconv.ParseInt(data.FlowInfo.TotalAmount.Balance, 10, 64)
-	totalFlow := useFlow + balanceFlow
+	usedData, _ := strconv.ParseInt(data.TrafficInfo.TotalAmount.Used, 10, 64)
+	balanceData, _ := strconv.ParseInt(data.TrafficInfo.TotalAmount.Balance, 10, 64)
+	totalData := usedData + balanceData
 
-	generalUse, _ := strconv.ParseInt(data.FlowInfo.CommonFlow.Used, 10, 64)
-	generalBalance, _ := strconv.ParseInt(data.FlowInfo.CommonFlow.Balance, 10, 64)
+	generalUse, _ := strconv.ParseInt(data.TrafficInfo.CommonTraffic.Used, 10, 64)
+	generalBalance, _ := strconv.ParseInt(data.TrafficInfo.CommonTraffic.Balance, 10, 64)
 	generalTotal := generalUse + generalBalance
 
-	specialUse, _ := strconv.ParseInt(data.FlowInfo.SpecialAmount.Used, 10, 64)
-	specialBalance, _ := strconv.ParseInt(data.FlowInfo.SpecialAmount.Balance, 10, 64)
+	specialUse, _ := strconv.ParseInt(data.TrafficInfo.SpecialAmount.Used, 10, 64)
+	specialBalance, _ := strconv.ParseInt(data.TrafficInfo.SpecialAmount.Balance, 10, 64)
 	specialTotal := specialUse + specialBalance
 
 	voiceUsage, _ := strconv.ParseInt(data.VoiceInfo.VoiceDataInfo.Used, 10, 64)
@@ -33,22 +34,22 @@ func ToSummary(qryImportantData *models.Result[models.ImportantData], username s
 	balance := int64(balanceFloat * 100)
 
 	var items []models.SummaryItems
-	flowLists := data.FlowInfo.FlowList
-	if flowLists != nil && len(flowLists) > 0 {
-		items = make([]models.SummaryItems, len(flowLists))
-		for i, flowList := range flowLists {
-			if !strings.Contains(flowList.Title, "流量") {
+	trafficLists := data.TrafficInfo.TrafficList
+	if trafficLists != nil && len(trafficLists) > 0 {
+		items = make([]models.SummaryItems, len(trafficLists))
+		for i, trafficList := range trafficLists {
+			if !strings.Contains(trafficList.Title, "流量") {
 				continue
 			}
 			var use, balanceF int64
-			if strings.Contains(flowList.LeftTitle, "已用") {
-				use, _ = ToInt64(flowList.LeftTitleHh)
+			if strings.Contains(trafficList.LeftTitle, "已用") {
+				use, _ = ParseTraffic(trafficList.LeftTitleHh)
 			}
-			if strings.Contains(flowList.RightTitle, "剩余") {
-				balanceF, _ = ToInt64(flowList.RightTitleHh)
+			if strings.Contains(trafficList.RightTitle, "剩余") {
+				balanceF, _ = ParseTraffic(trafficList.RightTitleHh)
 			}
 			items[i] = models.SummaryItems{
-				Name:  flowList.Title,
+				Name:  trafficList.Title,
 				Use:   use,
 				Total: use + balanceF,
 			}
@@ -57,8 +58,8 @@ func ToSummary(qryImportantData *models.Result[models.ImportantData], username s
 
 	return models.Summary{
 		Username:     username,
-		Use:          useFlow,
-		Total:        totalFlow,
+		Use:          usedData,
+		Total:        totalData,
 		Balance:      balance,
 		VoiceUsage:   voiceUsage,
 		VoiceAmount:  voiceAmount,

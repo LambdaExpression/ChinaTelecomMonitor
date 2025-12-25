@@ -6,13 +6,14 @@ import (
 	"China_Telecom_Monitor/tools"
 	"flag"
 	"fmt"
+	"strings"
+
 	"github.com/golang-module/carbon/v2"
 	"github.com/kataras/iris/v12"
 	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
-	"strings"
 )
 
 var Version = "v2.0.2"
@@ -44,15 +45,15 @@ func main() {
 
 // 初始化配置
 func initFlag() {
-	flag.StringVar(&configs.Prot, "prot", "8080", "--prot 8080")
+	flag.StringVar(&configs.Port, "port", "8080", "--port 8080")
 	flag.StringVar(&configs.Username, "username", "", "--username 1xxxxxxxxxx #电信账号用户名, 必填")
 	flag.StringVar(&configs.Password, "password", "", "--password xxxxx #电信账号密码, 必填")
-	flag.IntVar(&configs.LoginIntervalTime, "loginIntervalTime", 43200, "--loginIntervalTime 43200 #电信登录间隔时间（防止被封号），秒")
-	flag.Int64Var(&configs.TimeOut, "timeOut", 30, "--timeOut 30 #访问电信接口请求超时时间，秒")
-	flag.IntVar(&configs.IntervalsTime, "intervalsTime", 180, "--intervalsTime 180 #接口防止重刷时间")
+	flag.IntVar(&configs.LoginInterval, "loginInterval", 43200, "--loginInterval 43200 #电信登录间隔时间（防止被封号），秒")
+	flag.Int64Var(&configs.Timeout, "timeout", 30, "--timeout 30 #访问电信接口请求超时时间，秒")
+	flag.IntVar(&configs.Interval, "interval", 180, "--interval 180 #接口防止重刷时间")
 
 	flag.StringVar(&configs.LogLevel, "logLevel", "info", "--logLevel info # 日志等级")
-	flag.StringVar(&configs.LogEncoding, "logEncoding", "console", "--logEncoding console # 日志输出格式 console 或 json")
+	flag.StringVar(&configs.LogFormat, "logFormat", "console", "--logFormat console # 日志输出格式 console 或 json")
 
 	flag.StringVar(&configs.DataPath, "dataPath", "./data", "--dataPath ./data # 数据日志文件保存路径")
 
@@ -86,7 +87,7 @@ func checkFlag() bool {
 // 初始化 zap日志框架
 func initLogger() {
 	level := getLevel()
-	encoding := configs.LogEncoding
+	encoding := configs.LogFormat
 	// 保留两个变量，但设置成同一个文件
 	//stdout := configs.DataPath + "/log/stdout.log"
 	//stderr := configs.DataPath + "/log/stderr.log"
@@ -173,23 +174,23 @@ func cronSummary() {
 	t := carbon.Now()
 	qryImportantData := tools.GetQryImportantData(configs.Username, configs.Password)
 	//userFluxPackage := tools.GetUserFluxPackage(configs.Username, configs.Password)
-	configs.Summary = tools.ToSummary(qryImportantData, configs.Username, t)
+	configs.Summary = tools.ParseSummary(qryImportantData, configs.Username, t)
 }
 
 // 初始化访问接口
 func initIris() {
 	irisApp := iris.New()
 	irisApp.Use(middleware)
-	irisApp.Handle(iris.MethodGet, "/show/flow", flow)
+	irisApp.Handle(iris.MethodGet, "/show/traffic", traffic)
 	irisApp.Handle(iris.MethodGet, "/show/detail", packageDetail)
-	irisApp.Handle(iris.MethodGet, "/show/flowPackage", flowPackage)
+	irisApp.Handle(iris.MethodGet, "/show/trafficPackage", trafficPackage)
 	if configs.Dev {
 		irisApp.Handle(iris.MethodGet, "/refresh", refresh)
 
 		irisApp.Handle(iris.MethodGet, "/show/qryImportantData", qryImportantData)
 		irisApp.Handle(iris.MethodGet, "/show/userFluxPackage", userFluxPackage)
 	}
-	err := irisApp.Run(iris.Addr(":" + configs.Prot))
+	err := irisApp.Run(iris.Addr(":" + configs.Port))
 	if err != nil {
 		configs.Logger.Error("InitIris error", err)
 	}
@@ -200,22 +201,22 @@ func middleware(ctx iris.Context) {
 	ctx.Next()
 }
 
-var flowLastTime carbon.Carbon
+var trafficLastTime carbon.Carbon
 
 // 获取流量信息接口
-func flow(ctx iris.Context) {
+func traffic(ctx iris.Context) {
 
-	if carbon.Now().Lt(flowLastTime.AddSeconds(configs.IntervalsTime)) {
+	if carbon.Now().Lt(trafficLastTime.AddSeconds(configs.Interval)) {
 		ctx.JSON(iris.Map{"code": 200, "data": desensitization(configs.Summary)})
 		return
 	}
 
-	flowLastTime = carbon.Now()
+	trafficLastTime = carbon.Now()
 
 	t := carbon.Now()
 
 	qryImportantData := tools.GetQryImportantData(configs.Username, configs.Password)
-	configs.Summary = tools.ToSummary(qryImportantData, configs.Username, t)
+	configs.Summary = tools.ParseSummary(qryImportantData, configs.Username, t)
 
 	summary := desensitization(configs.Summary)
 	ctx.JSON(iris.Map{"code": 200, "data": summary})
@@ -228,8 +229,8 @@ func packageDetail(ctx iris.Context) {
 	})
 }
 
-func flowPackage(ctx iris.Context) {
-	ctx.JSON(&models.FlowPackage{
+func trafficPackage(ctx iris.Context) {
+	ctx.JSON(&models.TrafficPackage{
 		Result: 410,
 		Msg:    "接口已失效",
 	})
@@ -239,7 +240,7 @@ var qryImportantVisitLastTime carbon.Carbon
 var qryImportantDetailRequest *models.Result[models.ImportantData]
 
 func qryImportantData(ctx iris.Context) {
-	if carbon.Now().Lt(qryImportantVisitLastTime.AddSeconds(configs.IntervalsTime)) {
+	if carbon.Now().Lt(qryImportantVisitLastTime.AddSeconds(configs.Interval)) {
 		ctx.JSON(&qryImportantDetailRequest)
 		return
 	}
@@ -252,7 +253,7 @@ var userFluxPackageVisitLastTime carbon.Carbon
 var userFluxPackageDetailRequest *models.Result[models.UserFluxPackageData]
 
 func userFluxPackage(ctx iris.Context) {
-	if carbon.Now().Lt(userFluxPackageVisitLastTime.AddSeconds(configs.IntervalsTime)) {
+	if carbon.Now().Lt(userFluxPackageVisitLastTime.AddSeconds(configs.Interval)) {
 		ctx.JSON(&userFluxPackageDetailRequest)
 		return
 	}

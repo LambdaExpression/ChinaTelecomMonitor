@@ -8,7 +8,7 @@ import (
 )
 
 // 判断文件是否存在
-func IsExist(file string) bool {
+func FileExist(file string) bool {
 	_, err := os.Stat(file)
 	if err != nil {
 		return os.IsExist(err)
@@ -22,7 +22,7 @@ func Create(path string) (*os.File, error) {
 	//	return nil,errors.New("文件已经存在")
 	//}
 	dir := filepath.Dir(path)
-	if !IsExist(dir) {
+	if !FileExist(dir) {
 		e := os.MkdirAll(dir, 0755)
 		if e != nil {
 			configs.Logger.Error("创建文件夹失败, Error : ", e)

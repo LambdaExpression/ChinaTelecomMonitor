@@ -12,7 +12,7 @@ type LoginRequestContent struct {
 type LoginRequestFieldData struct {
 	AccountType                string `json:"accountType"`
 	Authentication             string `json:"authentication"`
-	DeviceUid                  string `json:"deviceUid"`
+	DeviceUID                  string `json:"deviceUid"`
 	IsChinatelecom             string `json:"isChinatelecom"`
 	LoginAuthCipherAsymmertric string `json:"loginAuthCipherAsymmertric"`
 	LoginType                  string `json:"loginType"`
@@ -27,7 +27,7 @@ type QryImportantDataRequestContent struct {
 type QryImportantDataRequestFieldData struct {
 	ProvinceCode   string `json:"provinceCode"`
 	CityCode       string `json:"cityCode"`
-	ShopId         string `json:"shopId"`
+	ShopID         string `json:"shopId"`
 	IsChinatelecom string `json:"isChinatelecom"`
 	Account        string `json:"account"`
 }
@@ -45,7 +45,7 @@ type UserFluxPackageRequestFieldData struct {
 type RequestHeaderInfos struct {
 	ClientType     string `json:"clientType,omitempty"`
 	Code           string `json:"code,omitempty"`
-	ShopId         string `json:"shopId,omitempty"`
+	ShopID         string `json:"shopId,omitempty"`
 	Source         string `json:"source,omitempty"`
 	SourcePassword string `json:"sourcePassword,omitempty"`
 	Timestamp      string `json:"timestamp,omitempty"`
@@ -76,7 +76,7 @@ type LoginData struct {
 type ImportantData struct {
 	// https://appfuwu.189.cn:9021/query/qryImportantData
 	BalanceInfo    BalanceInfo      `json:"balanceInfo,omitempty"`
-	FlowInfo       FlowInfo         `json:"flowInfo,omitempty"`
+	TrafficInfo    TrafficInfo      `json:"flowInfo,omitempty"`
 	VoiceInfo      VoiceInfo        `json:"voiceInfo,omitempty"`
 	IntegralInfo   IntegralInfo     `json:"integralInfo,omitempty"`
 	StorageInfo    StorageInfo      `json:"storageInfo,omitempty"`
@@ -170,13 +170,13 @@ type Amount struct {
 	Link      string `json:"link"`
 	LinkType  string `json:"linkType"`
 }
-type FlowRegion struct {
+type TrafficRegion struct {
 	Title      string `json:"title"`
 	SubTitle   string `json:"subTitle"`
 	SubTitleHh string `json:"subTitleHh"`
 	IconURL    string `json:"iconUrl"`
 }
-type FlowList struct {
+type TrafficList struct {
 	Title         string `json:"title"`
 	SubTitle      string `json:"subTitle"`
 	BarPercent    string `json:"barPercent"`
@@ -187,15 +187,15 @@ type FlowList struct {
 	RightTitleHh  string `json:"rightTitleHh"`
 	RightTitleEnd string `json:"rightTitleEnd"`
 }
-type FlowInfo struct {
-	CommonFlow        Amount              `json:"commonFlow"`
+type TrafficInfo struct {
+	CommonTraffic     Amount              `json:"commonFlow"`
 	SpecialAmount     Amount              `json:"specialAmount"`
 	TotalAmount       Amount              `json:"totalAmount"`
-	FlowRegion        FlowRegion          `json:"flowRegion"`
+	TrafficRegion     TrafficRegion       `json:"flowRegion"`
 	LoopTips          []interface{}       `json:"loopTips"`
 	ImportantDataBtns []ImportantDataBtns `json:"importantDataBtns"`
 	AdConfigs         []AdConfigs         `json:"adConfigs"`
-	FlowList          []FlowList          `json:"flowList"`
+	TrafficList       []TrafficList       `json:"flowList"`
 	ErrorMes          string              `json:"errorMes"`
 }
 type VoiceDataInfo struct {
@@ -247,11 +247,11 @@ type StorageDataInfo struct {
 }
 type StorageInfo struct {
 	StorageDataInfo   StorageDataInfo     `json:"storageDataInfo"`
-	FlowRegion        FlowRegion          `json:"flowRegion"`
+	TrafficRegion     TrafficRegion       `json:"flowRegion"`
 	LoopTips          []interface{}       `json:"loopTips"`
 	ImportantDataBtns []ImportantDataBtns `json:"importantDataBtns"`
 	AdConfigs         []AdConfigs         `json:"adConfigs"`
-	FlowList          []FlowList          `json:"flowList"`
+	TrafficList       []TrafficList       `json:"flowList"`
 	ErrorMes          string              `json:"errorMes"`
 }
 type ThresholdMesList struct {

@@ -10,16 +10,17 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
-	"github.com/golang-module/carbon/v2"
 	"io"
 	"math/big"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/golang-module/carbon/v2"
 )
 
-func ChinaTelecomLogin(username, password string) bool {
+func Login(username, password string) bool {
 
 	if !checkLogin() {
 		return false
@@ -37,10 +38,10 @@ func checkLogin() bool {
 	// 上次获取token时间
 	getTokenTime := carbon.CreateFromTimestamp(token.LoginLastTime)
 	// 下次获取token时间 = 上次获取token时间 + 获取token间隔时间
-	nextTimeGetTokenTime := getTokenTime.AddSeconds(configs.LoginIntervalTime)
+	nextTimeGetTokenTime := getTokenTime.AddSeconds(configs.LoginInterval)
 	// 比较 下次获取token时间 是否大于 现在时间
 	if nextTimeGetTokenTime.Gt(carbon.Now()) {
-		configs.Logger.Error(strconv.Itoa(configs.LoginIntervalTime) + " 秒内最多登录一次，下次获取token时间为" + nextTimeGetTokenTime.ToDateTimeString() + "，避免被封号")
+		configs.Logger.Error(strconv.Itoa(configs.LoginInterval) + " 秒内最多登录一次，下次获取token时间为" + nextTimeGetTokenTime.ToDateTimeString() + "，避免被封号")
 		return false
 	}
 	return true
@@ -49,7 +50,7 @@ func checkLogin() bool {
 func login(mobile, password string) {
 
 	t := time.Now().Format("20060102150400")
-	deviceUid := fmt.Sprintln("%s4%4", randStr(12), randStr(3))
+	deviceUID := fmt.Sprintln("%s4%4", randStr(12), randStr(3))
 
 	e := fmt.Sprintf("iPhone 14 15.4.%s%s%s%s0$$$0.", randStr(12), mobile, t, password)
 	enc, err := encrypt(e)
@@ -63,7 +64,7 @@ func login(mobile, password string) {
 			FieldData: models.LoginRequestFieldData{
 				AccountType:                "",
 				Authentication:             encodePhone(password),
-				DeviceUid:                  deviceUid,
+				DeviceUID:                  deviceUID,
 				IsChinatelecom:             "0",
 				LoginAuthCipherAsymmertric: enc,
 				LoginType:                  "4",
@@ -118,7 +119,7 @@ func GetQryImportantData(mobile, password string) *models.Result[models.Importan
 			FieldData: models.QryImportantDataRequestFieldData{
 				ProvinceCode:   "600101",
 				CityCode:       "8441900",
-				ShopId:         "20002",
+				ShopID:         "20002",
 				IsChinatelecom: "0",
 				Account:        transPhone(mobile),
 			},
@@ -171,7 +172,7 @@ func initHeaderInfos(mobile, code, t string) models.RequestHeaderInfos {
 		ClientType:     "#" + configs.ClientVersion + "#channel50#iPhone 14 Pro#",
 		Timestamp:      t,
 		Code:           code,
-		ShopId:         "20002",
+		ShopID:         "20002",
 		Source:         "110003",
 		SourcePassword: "Sid98s",
 		UserLoginName:  encodePhone(mobile),
@@ -248,7 +249,7 @@ func post[C, D any](requestUrl string, requestBody models.Request[C], mobile, pa
 	}
 	// token 过期
 	if resultData.HeaderInfos.Code == "X201" && autoLogin && !firstLogin {
-		ChinaTelecomLogin(mobile, password)
+		Login(mobile, password)
 		return post[C, D](requestUrl, requestBody, mobile, password, false, false)
 	}
 	if resultData.HeaderInfos.Code != "0000" || resultData.ResponseData.ResultCode != "0000" {
